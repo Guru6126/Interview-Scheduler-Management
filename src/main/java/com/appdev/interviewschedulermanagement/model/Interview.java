@@ -1,35 +1,40 @@
-package com.gurukarthikeyan.interviewschedulermanagement.model;
+package com.appdev.interviewschedulermanagement.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "availability")
+@Table(name = "interviews")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Availability {
+public class Interview {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private LocalDate availableDate;
+    private LocalDate interviewDate;
 
     @Column(nullable = false)
-    private LocalTime startTime;
+    private LocalTime interviewTime;
 
     @Column(nullable = false)
-    private LocalTime endTime;
+    private String interviewMode;
+
 
     @Column(nullable = false)
-    private Boolean available;
+    private String status;
+
+    @Column(length = 1000)
+    private String feedback;
 }

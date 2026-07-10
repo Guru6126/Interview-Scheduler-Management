@@ -1,6 +1,6 @@
-package com.gurukarthikeyan.interviewschedulermanagement.model;
+package com.appdev.interviewschedulermanagement.model;
 
-import com.gurukarthikeyan.interviewschedulermanagement.enums.Role;
+import com.appdev.interviewschedulermanagement.enums.Role;
 
 // import javax.management.relation.Role;
 

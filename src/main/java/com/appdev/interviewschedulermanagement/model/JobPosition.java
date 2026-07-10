@@ -1,4 +1,4 @@
-package com.gurukarthikeyan.interviewschedulermanagement.model;
+package com.appdev.interviewschedulermanagement.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.gurukarthikeyan.interviewschedulermanagement;
+package com.appdev.interviewschedulermanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
