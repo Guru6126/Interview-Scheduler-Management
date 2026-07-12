@@ -2,9 +2,7 @@ package com.appdev.interviewschedulermanagement.controller;
 
 import com.appdev.interviewschedulermanagement.dto.UserRequest;
 import com.appdev.interviewschedulermanagement.dto.UserResponse;
-import com.appdev.interviewschedulermanagement.enums.Role;
 import com.appdev.interviewschedulermanagement.service.UserService;
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,51 +22,37 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
-        UserResponse createdUser = userService.createUser(request);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        UserResponse response = userService.createUser(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-        UserResponse user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username) {
-        UserResponse user = userService.getUserByUsername(username);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable Role role) {
-        List<UserResponse> users = userService.getUsersByRole(role);
-        return ResponseEntity.ok(users);
+        UserResponse response = userService.getUserById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        List<UserResponse> response = userService.getAllUsers();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id, 
-            @Valid @RequestBody UserRequest request) {
-        UserResponse updatedUser = userService.updateUser(id, request);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+        UserResponse response = userService.updateUser(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/login-timestamp")
+    public ResponseEntity<Void> recordLogin(@PathVariable Long id) {
+        userService.updateLastLogin(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}/login")
-    public ResponseEntity<UserResponse> updateLastLogin(@PathVariable Long id) {
-        UserResponse updatedUser = userService.updateLastLogin(id);
-        return ResponseEntity.ok(updatedUser);
     }
 }

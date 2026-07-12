@@ -1,9 +1,8 @@
 package com.appdev.interviewschedulermanagement.enums;
 
-public enum Role {
+public enum UserRole {
     ADMIN,
-    HR_MANAGER,
     RECRUITER,
     INTERVIEWER,
-    CANDIDATE
+    COORDINATOR
 }
