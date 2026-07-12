@@ -22,23 +22,24 @@ public class CandidateService {
     private final UserRepository userRepository;
     private final CandidateMapper candidateMapper;
 
-    public CandidateService(CandidateRepository candidateRepository, 
-                            UserRepository userRepository, 
-                            CandidateMapper candidateMapper) {
+    public CandidateService(CandidateRepository candidateRepository, UserRepository userRepository, CandidateMapper candidateMapper) {
         this.candidateRepository = candidateRepository;
         this.userRepository = userRepository;
         this.candidateMapper = candidateMapper;
     }
 
     public CandidateResponse createCandidate(CandidateRequest request) {
-        if (candidateRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Candidate email already exists");
+        if (candidateRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Candidate email address is already registered");
         }
 
-        User creator = userRepository.findById(request.getCreatedById())
-                .orElseThrow(() -> new RuntimeException("User profile not found with ID: " + request.getCreatedById()));
+        User recruiter = null;
+        if (request.getRecruiterId() != null) {
+            recruiter = userRepository.findById(request.getRecruiterId())
+                    .orElseThrow(() -> new RuntimeException("Assigned recruiter profile not found"));
+        }
 
-        Candidate candidate = candidateMapper.toEntity(request, creator);
+        Candidate candidate = candidateMapper.toEntity(request, recruiter);
         Candidate savedCandidate = candidateRepository.save(candidate);
         return candidateMapper.toResponse(savedCandidate);
     }
@@ -46,7 +47,7 @@ public class CandidateService {
     @Transactional(readOnly = true)
     public CandidateResponse getCandidateById(Long id) {
         Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Candidate profiles matching ID not found: " + id));
         return candidateMapper.toResponse(candidate);
     }
 
@@ -57,32 +58,28 @@ public class CandidateService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<CandidateResponse> getCandidatesByStatus(CandidateStatus status) {
-        return candidateRepository.findByStatus(status).stream()
-                .map(candidateMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
     public CandidateResponse updateCandidate(Long id, CandidateRequest request) {
         Candidate existingCandidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Candidate profiles matching ID not found: " + id));
 
-        if (!existingCandidate.getEmail().equals(request.getEmail()) && 
-            candidateRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already in use by another candidate");
+        User recruiter = null;
+        if (request.getRecruiterId() != null) {
+            recruiter = userRepository.findById(request.getRecruiterId())
+                    .orElseThrow(() -> new RuntimeException("Assigned recruiter profile not found"));
         }
-
-        User creator = userRepository.findById(request.getCreatedById())
-                .orElseThrow(() -> new RuntimeException("User profile not found with ID: " + request.getCreatedById()));
 
         existingCandidate.setFirstName(request.getFirstName());
         existingCandidate.setLastName(request.getLastName());
-        existingCandidate.setEmail(request.getEmail());
         existingCandidate.setPhoneNumber(request.getPhoneNumber());
         existingCandidate.setResumeUrl(request.getResumeUrl());
+        existingCandidate.setCurrentPosition(request.getCurrentPosition());
+        existingCandidate.setCurrentCompany(request.getCurrentCompany());
+        existingCandidate.setExperienceYears(request.getExperienceYears());
+        existingCandidate.setExpectedSalary(request.getExpectedSalary());
+        existingCandidate.setAvailabilityDate(request.getAvailabilityDate());
         existingCandidate.setStatus(request.getStatus());
-        existingCandidate.setCreatedBy(creator);
+        existingCandidate.setSource(request.getSource());
+        existingCandidate.setRecruiter(recruiter);
 
         Candidate updatedCandidate = candidateRepository.save(existingCandidate);
         return candidateMapper.toResponse(updatedCandidate);
@@ -90,7 +87,7 @@ public class CandidateService {
 
     public void deleteCandidate(Long id) {
         if (!candidateRepository.existsById(id)) {
-            throw new RuntimeException("Candidate not found with ID: " + id);
+            throw new RuntimeException("Candidate profile missing with ID: " + id);
         }
         candidateRepository.deleteById(id);
     }

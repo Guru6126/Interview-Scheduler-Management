@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class CandidateRequest {
@@ -23,15 +25,29 @@ public class CandidateRequest {
     @Size(max = 100, message = "Email cannot exceed 100 characters")
     private String email;
 
-    @Size(max = 15, message = "Phone number cannot exceed 15 characters")
+    @Size(max = 20, message = "Phone number cannot exceed 20 characters")
     private String phoneNumber;
 
     @Size(max = 255, message = "Resume URL cannot exceed 255 characters")
     private String resumeUrl;
 
+    @Size(max = 100, message = "Current position cannot exceed 100 characters")
+    private String currentPosition;
+
+    @Size(max = 100, message = "Current company cannot exceed 100 characters")
+    private String currentCompany;
+
+    private Integer experienceYears;
+
+    private BigDecimal expectedSalary;
+
+    private LocalDate availabilityDate;
+
     @NotNull(message = "Candidate status is required")
     private CandidateStatus status;
 
-    @NotNull(message = "Creator User ID is required")
-    private Long createdById;
+    @Size(max = 100, message = "Source cannot exceed 100 characters")
+    private String source;
+
+    private Long recruiterId;
 }

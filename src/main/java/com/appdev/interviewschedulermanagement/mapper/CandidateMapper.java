@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CandidateMapper {
 
-    public Candidate toEntity(CandidateRequest request, User creator) {
+    public Candidate toEntity(CandidateRequest request, User recruiter) {
         if (request == null) {
             return null;
         }
@@ -20,8 +20,14 @@ public class CandidateMapper {
         candidate.setEmail(request.getEmail());
         candidate.setPhoneNumber(request.getPhoneNumber());
         candidate.setResumeUrl(request.getResumeUrl());
+        candidate.setCurrentPosition(request.getCurrentPosition());
+        candidate.setCurrentCompany(request.getCurrentCompany());
+        candidate.setExperienceYears(request.getExperienceYears());
+        candidate.setExpectedSalary(request.getExpectedSalary());
+        candidate.setAvailabilityDate(request.getAvailabilityDate());
         candidate.setStatus(request.getStatus());
-        candidate.setCreatedBy(creator);
+        candidate.setSource(request.getSource());
+        candidate.setRecruiter(recruiter);
 
         return candidate;
     }
@@ -38,12 +44,19 @@ public class CandidateMapper {
         response.setEmail(entity.getEmail());
         response.setPhoneNumber(entity.getPhoneNumber());
         response.setResumeUrl(entity.getResumeUrl());
+        response.setCurrentPosition(entity.getCurrentPosition());
+        response.setCurrentCompany(entity.getCurrentCompany());
+        response.setExperienceYears(entity.getExperienceYears());
+        response.setExpectedSalary(entity.getExpectedSalary());
+        response.setAvailabilityDate(entity.getAvailabilityDate());
         response.setStatus(entity.getStatus());
+        response.setSource(entity.getSource());
         response.setCreatedDate(entity.getCreatedDate());
+        response.setUpdatedDate(entity.getUpdatedDate());
 
-        if (entity.getCreatedBy() != null) {
-            response.setCreatedById(entity.getCreatedBy().getId());
-            response.setCreatedByUsername(entity.getCreatedBy().getUsername());
+        if (entity.getRecruiter() != null) {
+            response.setRecruiterId(entity.getRecruiter().getId());
+            response.setRecruiterName(entity.getRecruiter().getFirstName() + " " + entity.getRecruiter().getLastName());
         }
 
         return response;

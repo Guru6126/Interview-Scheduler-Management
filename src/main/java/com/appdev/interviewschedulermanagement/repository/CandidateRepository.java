@@ -12,6 +12,5 @@ import java.util.Optional;
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     Optional<Candidate> findByEmail(String email);
     List<Candidate> findByStatus(CandidateStatus status);
-    List<Candidate> findByCreatedById(Long userId);
-    boolean existsByEmail(String email);
+    List<Candidate> findByRecruiterId(Long recruiterId);
 }

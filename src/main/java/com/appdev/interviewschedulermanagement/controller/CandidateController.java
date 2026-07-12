@@ -2,7 +2,6 @@ package com.appdev.interviewschedulermanagement.controller;
 
 import com.appdev.interviewschedulermanagement.dto.CandidateRequest;
 import com.appdev.interviewschedulermanagement.dto.CandidateResponse;
-import com.appdev.interviewschedulermanagement.enums.CandidateStatus;
 import com.appdev.interviewschedulermanagement.service.CandidateService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,16 +38,8 @@ public class CandidateController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<CandidateResponse>> getCandidatesByStatus(@PathVariable CandidateStatus status) {
-        List<CandidateResponse> response = candidateService.getCandidatesByStatus(status);
-        return ResponseEntity.ok(response);
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<CandidateResponse> updateCandidate(
-            @PathVariable Long id, 
-            @Valid @RequestBody CandidateRequest request) {
+    public ResponseEntity<CandidateResponse> updateCandidate(@PathVariable Long id, @Valid @RequestBody CandidateRequest request) {
         CandidateResponse response = candidateService.updateCandidate(id, request);
         return ResponseEntity.ok(response);
     }
