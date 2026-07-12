@@ -1,16 +1,17 @@
 package com.appdev.interviewschedulermanagement.dto;
 
-import com.appdev.interviewschedulermanagement.enums.AvailabilityStatus;
 import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 public class AvailabilityResponse {
     private Long id;
-    private Long interviewerId;
-    private String interviewerUsername;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private AvailabilityStatus status;
-    private LocalDateTime createdDate;
+    private Long userId;
+    private String userName;
+    private LocalDate availableDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private Boolean isAvailable;
+    private Boolean recurring;
 }
