@@ -1,8 +1,5 @@
 package com.appdev.interviewschedulermanagement.enums;
 
 public enum NotificationType {
-    EMAIL,
-    SMS,
-    IN_APP,
-    PUSH
+    INTERVIEW_SCHEDULED, INTERVIEW_RESCHEDULED, INTERVIEW_CANCELLED, FEEDBACK_SUBMITTED
 }
