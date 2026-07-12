@@ -1,11 +1,12 @@
 package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
+import com.appdev.interviewschedulermanagement.enums.InterviewType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "interviews")
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Interview {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,24 +26,27 @@ public class Interview {
     @JoinColumn(name = "job_position_id", nullable = false)
     private JobPosition jobPosition;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id", nullable = false)
-    private User interviewer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organized_by", nullable = false)
-    private User organizedBy;
-
-    @Column(name = "scheduled_time", nullable = false)
-    private LocalDateTime scheduledTime;
+    private LocalDate scheduledDate;
+    private LocalTime scheduledTime;
+    private Integer duration; // in minutes
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private InterviewType interviewType;
+
+    private String meetingLink;
+    private String location;
+
+    @Enumerated(EnumType.STRING)
     private InterviewStatus status = InterviewStatus.SCHEDULED;
 
-    @Column(name = "meeting_link", length = 255)
-    private String meetingLink;
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 
-    @Column(name = "created_date", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime updatedDate;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedDate = LocalDateTime.now();
+    }
 }

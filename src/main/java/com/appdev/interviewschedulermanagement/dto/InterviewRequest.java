@@ -1,32 +1,22 @@
 package com.appdev.interviewschedulermanagement.dto;
 
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
+import com.appdev.interviewschedulermanagement.enums.InterviewType;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 public class InterviewRequest {
-
-    @NotNull(message = "Candidate ID is required")
-    private Long candidateId;
-
-    @NotNull(message = "Job Position ID is required")
-    private Long jobPositionId;
-
-    @NotNull(message = "Interviewer ID is required")
-    private Long interviewerId;
-
-    @NotNull(message = "Organizer ID is required")
-    private Long organizedById;
-
-    @NotNull(message = "Scheduled time is required")
-    private LocalDateTime scheduledTime;
-
-    @NotNull(message = "Interview status is required")
-    private InterviewStatus status;
-
-    @Size(max = 255, message = "Meeting link cannot exceed 255 characters")
+    @NotNull private Long candidateId;
+    @NotNull private Long jobPositionId;
+    @NotNull private LocalDate scheduledDate;
+    @NotNull private LocalTime scheduledTime;
+    private Integer duration;
+    @NotNull private InterviewType interviewType;
     private String meetingLink;
+    private String location;
+    private InterviewStatus status;
+    private String notes;
 }
