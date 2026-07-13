@@ -5,6 +5,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "availabilities")
 @Data
@@ -14,10 +16,6 @@ public class Availability {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     @Column(name = "available_date", nullable = false)
     private LocalDate availableDate;
@@ -32,4 +30,10 @@ public class Availability {
     private Boolean isAvailable = true;
 
     private Boolean recurring = false;
+
+    // Jpa mappings
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("availabilities")
+    private User user;
 }

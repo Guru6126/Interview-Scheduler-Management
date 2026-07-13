@@ -1,6 +1,8 @@
 package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.CandidateStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -57,10 +59,6 @@ public class Candidate {
     @Column(length = 100)
     private String source;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recruiter_id")
-    private User recruiter;
-
     @Column(name = "created_date", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdDate;
 
@@ -71,4 +69,11 @@ public class Candidate {
     protected void onUpdate() {
         updatedDate = LocalDateTime.now();
     }
+
+    // Jpa mappings
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruiter_id")
+    @JsonIgnoreProperties("candidates")
+    private User recruiter;
 }

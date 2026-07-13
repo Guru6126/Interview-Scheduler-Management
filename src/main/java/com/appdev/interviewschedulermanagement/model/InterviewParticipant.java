@@ -1,6 +1,8 @@
 package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,10 +20,6 @@ public class InterviewParticipant {
     @JoinColumn(name = "interview_id", nullable = false)
     private Interview interview;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Enumerated(EnumType.STRING)
     private ParticipantRole role;
 
@@ -29,4 +27,10 @@ public class InterviewParticipant {
 
     @Enumerated(EnumType.STRING)
     private AttendanceStatus attendanceStatus = AttendanceStatus.PENDING;
+
+    // Jpa mappings
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("participants")
+    private User user;
 }

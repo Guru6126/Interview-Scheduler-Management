@@ -1,11 +1,15 @@
 package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -57,4 +61,30 @@ public class User {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    //Jpa mappings
+
+    @OneToMany(mappedBy = "recruiter", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("recruiter")
+    private List<Candidate> candidates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("creator")
+    private List<JobPosition> jobPositions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<Availability> availabilities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<AuditLog> auditLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<InterviewParticipant> participants = new ArrayList<>();
 }

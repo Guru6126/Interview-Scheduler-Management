@@ -2,6 +2,8 @@ package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.EmploymentType;
 import com.appdev.interviewschedulermanagement.enums.JobPositionStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -16,10 +18,6 @@ public class JobPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", nullable = false)
-    private User creator;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -63,4 +61,10 @@ public class JobPosition {
     protected void onUpdate() {
         updatedDate = LocalDateTime.now();
     }
+
+    // Jpa mappings
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    @JsonIgnoreProperties("jobPositions")
+    private User creator;
 }
