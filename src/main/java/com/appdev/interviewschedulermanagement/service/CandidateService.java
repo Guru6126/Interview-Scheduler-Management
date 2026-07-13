@@ -4,7 +4,6 @@ import com.appdev.interviewschedulermanagement.dto.CandidateRequest;
 import com.appdev.interviewschedulermanagement.dto.CandidateResponse;
 import com.appdev.interviewschedulermanagement.model.Candidate;
 import com.appdev.interviewschedulermanagement.model.User;
-import com.appdev.interviewschedulermanagement.enums.CandidateStatus;
 import com.appdev.interviewschedulermanagement.mapper.CandidateMapper;
 import com.appdev.interviewschedulermanagement.repository.CandidateRepository;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
