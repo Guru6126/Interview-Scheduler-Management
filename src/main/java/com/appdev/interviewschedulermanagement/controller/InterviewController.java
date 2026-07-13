@@ -3,6 +3,8 @@ package com.appdev.interviewschedulermanagement.controller;
 import com.appdev.interviewschedulermanagement.dto.*;
 import com.appdev.interviewschedulermanagement.service.InterviewService;
 import jakarta.validation.Valid;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -38,8 +40,9 @@ public class InterviewController {
     @PatchMapping("/{id}/reschedule")
     public ResponseEntity<InterviewResponse> rescheduleInterview(
             @PathVariable Long id, 
-            @RequestParam LocalDate date, 
-            @RequestParam LocalTime time) {
-        return ResponseEntity.ok(service.rescheduleInterview(id, date, time));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, 
+            @RequestParam String time) {
+                LocalTime parsedTime = LocalTime.parse(time.length() > 8 ? time.substring(11, 19) : time);
+        return ResponseEntity.ok(service.rescheduleInterview(id, date, parsedTime));
     }
 }

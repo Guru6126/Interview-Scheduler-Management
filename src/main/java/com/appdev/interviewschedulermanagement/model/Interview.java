@@ -9,6 +9,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.*;
 
 @Entity
 @Table(name = "interviews")
@@ -44,6 +46,8 @@ public class Interview {
         updatedDate = LocalDateTime.now();
     }
 
+    //JPA Relationships
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_position_id")
     @JsonIgnoreProperties("interviews")
@@ -54,4 +58,14 @@ public class Interview {
     @JoinColumn(name = "candidate_id", nullable = false)
     @JsonIgnoreProperties("interviews") // Prevents infinite recursion
     private Candidate candidate;
+
+    // 1. One-to-Many: An interview can have multiple participants
+    @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("interview")
+    private List<InterviewParticipant> participants = new ArrayList<>();
+
+    // 2. One-to-One (or One-to-Many): An interview gets feedback
+    @OneToOne(mappedBy = "interview", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("interview")
+    private InterviewFeedback feedback;
 }

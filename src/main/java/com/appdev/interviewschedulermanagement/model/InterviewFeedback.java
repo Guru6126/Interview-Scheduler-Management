@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "interview_feedbacks")
 @Data
@@ -13,10 +15,6 @@ public class InterviewFeedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interview_id", nullable = false)
-    private Interview interview;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interviewer_id", nullable = false)
@@ -38,4 +36,10 @@ public class InterviewFeedback {
     private String recommendation;
     private Boolean wouldInterviewAgain;
     private LocalDateTime submittedDate = LocalDateTime.now();
+
+    // jpa mappings
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interview_id", nullable = false)
+    @JsonIgnoreProperties("feedback") // Prevents infinite loops
+    private Interview interview;
 }

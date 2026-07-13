@@ -33,14 +33,31 @@ public class InterviewService {
         return mapper.toResponse(repo.findById(id).orElseThrow());
     }
 
+    @Transactional
     public InterviewResponse updateInterviewDetails(Long id, InterviewRequest req) {
+        // Interview e = repo.findById(id).orElseThrow();
+        // e.setScheduledDate(req.getScheduledDate());
+        // e.setScheduledTime(req.getScheduledTime());
+        // e.setDuration(req.getDuration());
+        // e.setMeetingLink(req.getMeetingLink());
+        // e.setNotes(req.getNotes());
+        // repo.flush();
+        // return mapper.toResponse(repo.save(e));
         Interview e = repo.findById(id).orElseThrow();
+    
+        // 2. Apply the updates
         e.setScheduledDate(req.getScheduledDate());
         e.setScheduledTime(req.getScheduledTime());
         e.setDuration(req.getDuration());
         e.setMeetingLink(req.getMeetingLink());
         e.setNotes(req.getNotes());
-        return mapper.toResponse(repo.save(e));
+        
+        // 3. Save and capture the returned entity
+        // This returned object is the "managed" version from the database
+        Interview savedInterview = repo.save(e);
+        System.out.println("DEBUG: Duration in entity is: " + e.getDuration());
+        // 4. Map the SAVED object to the response
+        return mapper.toResponse(savedInterview);
     }
 
     public void cancelInterview(Long id) {
@@ -54,6 +71,9 @@ public class InterviewService {
         e.setScheduledDate(date);
         e.setScheduledTime(time);
         e.setStatus(InterviewStatus.RESCHEDULED);
-        return mapper.toResponse(repo.save(e));
+        Interview savedInterview = repo.saveAndFlush(e);
+    
+        // 4. Return the response using the SAVED entity
+        return mapper.toResponse(savedInterview);
     }
 }

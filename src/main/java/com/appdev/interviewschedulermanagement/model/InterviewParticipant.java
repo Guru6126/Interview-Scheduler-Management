@@ -16,10 +16,6 @@ public class InterviewParticipant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interview_id", nullable = false)
-    private Interview interview;
-
     @Enumerated(EnumType.STRING)
     private ParticipantRole role;
 
@@ -33,4 +29,10 @@ public class InterviewParticipant {
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("participants")
     private User user;
+
+    // Inside InterviewParticipant.java
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interview_id", nullable = false)
+    @JsonIgnoreProperties("participants") // Prevents infinite loops
+    private Interview interview;
 }
