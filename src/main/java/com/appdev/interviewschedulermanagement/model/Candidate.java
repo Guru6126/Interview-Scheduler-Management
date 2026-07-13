@@ -82,4 +82,8 @@ public class Candidate {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("candidate")
     private List<JobApplication> jobApplications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("candidate") // Prevents infinite recursion
+    private List<Interview> interviews = new ArrayList<>();
 }

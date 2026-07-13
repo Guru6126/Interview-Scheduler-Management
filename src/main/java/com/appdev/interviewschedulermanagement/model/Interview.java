@@ -49,8 +49,9 @@ public class Interview {
     @JsonIgnoreProperties("interviews")
     private JobPosition jobPosition;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id")
-    @JsonIgnoreProperties("interviews")
+    @JoinColumn(name = "candidate_id", nullable = false)
+    @JsonIgnoreProperties("interviews") // Prevents infinite recursion
     private Candidate candidate;
 }
