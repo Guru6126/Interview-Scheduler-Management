@@ -16,10 +16,6 @@ public class InterviewFeedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id", nullable = false)
-    private User interviewer;
-
     private Integer overallRating;
     private Integer technicalSkillsRating;
     private Integer communicationRating;
@@ -37,9 +33,13 @@ public class InterviewFeedback {
     private Boolean wouldInterviewAgain;
     private LocalDateTime submittedDate = LocalDateTime.now();
 
-    // jpa mappings
+    // Jpa mappings
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interview_id", nullable = false)
     @JsonIgnoreProperties("feedback") // Prevents infinite loops
     private Interview interview;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interviewer_id", nullable = false)
+    private User interviewer;
 }
