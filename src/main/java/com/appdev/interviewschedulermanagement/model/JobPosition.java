@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "job_positions")
@@ -67,4 +69,12 @@ public class JobPosition {
     @JoinColumn(name = "creator_id")
     @JsonIgnoreProperties("jobPositions")
     private User creator;
+
+    @OneToMany(mappedBy = "jobPosition", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("jobPosition")
+    private List<JobApplication> jobApplications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "jobPosition", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("jobPosition")
+    private List<Interview> interviews = new ArrayList<>();
 }

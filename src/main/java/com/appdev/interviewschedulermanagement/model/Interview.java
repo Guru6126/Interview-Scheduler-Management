@@ -2,6 +2,8 @@ package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
 import com.appdev.interviewschedulermanagement.enums.InterviewType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -17,14 +19,6 @@ public class Interview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id", nullable = false)
-    private Candidate candidate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_position_id", nullable = false)
-    private JobPosition jobPosition;
 
     private LocalDate scheduledDate;
     private LocalTime scheduledTime;
@@ -49,4 +43,14 @@ public class Interview {
     protected void onUpdate() {
         updatedDate = LocalDateTime.now();
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_position_id")
+    @JsonIgnoreProperties("interviews")
+    private JobPosition jobPosition;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    @JsonIgnoreProperties("interviews")
+    private Candidate candidate;
 }

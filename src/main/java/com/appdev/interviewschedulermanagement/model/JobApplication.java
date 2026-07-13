@@ -1,6 +1,8 @@
 package com.appdev.interviewschedulermanagement.model;
 
 import com.appdev.interviewschedulermanagement.enums.JobApplicationStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -15,16 +17,19 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id", nullable = false)
-    private Candidate candidate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_position_id", nullable = false)
-    private JobPosition jobPosition;
-
     private LocalDateTime appliedDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private JobApplicationStatus status = JobApplicationStatus.APPLIED;
+
+    //Jpa mappings
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    @JsonIgnoreProperties("jobApplications")
+    private Candidate candidate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_position_id")
+    @JsonIgnoreProperties("jobApplications")
+    private JobPosition jobPosition;
 }

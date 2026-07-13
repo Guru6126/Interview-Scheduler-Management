@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "candidates")
@@ -76,4 +78,8 @@ public class Candidate {
     @JoinColumn(name = "recruiter_id")
     @JsonIgnoreProperties("candidates")
     private User recruiter;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("candidate")
+    private List<JobApplication> jobApplications = new ArrayList<>();
 }
