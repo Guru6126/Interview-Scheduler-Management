@@ -31,7 +31,7 @@ public class Availability {
 
     private Boolean recurring = false;
 
-    // Jpa mappings
+    // Jpa mapping
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("availabilities")
