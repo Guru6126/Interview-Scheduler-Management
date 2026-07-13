@@ -1,4 +1,4 @@
-package com.appdev.interviewschedulermanagement.enums;
+package com.appdev.interviewschedulermanagement.dto;
 
 import lombok.Data;
 

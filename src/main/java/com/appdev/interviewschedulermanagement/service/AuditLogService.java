@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.appdev.interviewschedulermanagement.enums.AuditLogRequest;
-import com.appdev.interviewschedulermanagement.enums.AuditLogResponse;
+import com.appdev.interviewschedulermanagement.dto.AuditLogRequest;
+import com.appdev.interviewschedulermanagement.dto.AuditLogResponse;
 import com.appdev.interviewschedulermanagement.mapper.AuditLogMapper;
 import com.appdev.interviewschedulermanagement.model.AuditLog;
 import com.appdev.interviewschedulermanagement.model.User;

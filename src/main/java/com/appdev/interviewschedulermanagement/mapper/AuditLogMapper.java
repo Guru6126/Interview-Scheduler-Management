@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import com.appdev.interviewschedulermanagement.enums.AuditLogRequest;
-import com.appdev.interviewschedulermanagement.enums.AuditLogResponse;
+import com.appdev.interviewschedulermanagement.dto.AuditLogRequest;
+import com.appdev.interviewschedulermanagement.dto.AuditLogResponse;
 import com.appdev.interviewschedulermanagement.model.AuditLog;
 import com.appdev.interviewschedulermanagement.model.User;
 

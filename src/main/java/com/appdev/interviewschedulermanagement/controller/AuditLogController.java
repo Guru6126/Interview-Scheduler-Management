@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.appdev.interviewschedulermanagement.enums.AuditLogRequest;
-import com.appdev.interviewschedulermanagement.enums.AuditLogResponse;
+import com.appdev.interviewschedulermanagement.dto.AuditLogRequest;
+import com.appdev.interviewschedulermanagement.dto.AuditLogResponse;
 import com.appdev.interviewschedulermanagement.service.AuditLogService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
