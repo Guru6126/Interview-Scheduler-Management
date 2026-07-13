@@ -4,6 +4,9 @@ import com.appdev.interviewschedulermanagement.dto.*;
 import com.appdev.interviewschedulermanagement.mapper.InterviewMapper;
 import com.appdev.interviewschedulermanagement.model.*;
 import com.appdev.interviewschedulermanagement.repository.*;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,29 +38,24 @@ public class InterviewService {
 
     @Transactional
     public InterviewResponse updateInterviewDetails(Long id, InterviewRequest req) {
-        // Interview e = repo.findById(id).orElseThrow();
-        // e.setScheduledDate(req.getScheduledDate());
-        // e.setScheduledTime(req.getScheduledTime());
-        // e.setDuration(req.getDuration());
-        // e.setMeetingLink(req.getMeetingLink());
-        // e.setNotes(req.getNotes());
-        // repo.flush();
-        // return mapper.toResponse(repo.save(e));
-        Interview e = repo.findById(id).orElseThrow();
+        Interview e = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Interview not found with id: " + id));
     
-        // 2. Apply the updates
-        e.setScheduledDate(req.getScheduledDate());
-        e.setScheduledTime(req.getScheduledTime());
-        e.setDuration(req.getDuration());
-        e.setMeetingLink(req.getMeetingLink());
-        e.setNotes(req.getNotes());
-        
-        // 3. Save and capture the returned entity
-        // This returned object is the "managed" version from the database
-        Interview savedInterview = repo.save(e);
-        System.out.println("DEBUG: Duration in entity is: " + e.getDuration());
-        // 4. Map the SAVED object to the response
-        return mapper.toResponse(savedInterview);
+    // 2. Apply updates
+    e.setScheduledDate(req.getScheduledDate());
+    e.setScheduledTime(req.getScheduledTime());
+    e.setDuration(req.getDuration());
+    e.setMeetingLink(req.getMeetingLink());
+    e.setNotes(req.getNotes());
+    e.setLocation(req.getLocation());
+    
+    // 3. Force the flush to sync with the DB immediately
+    // Use saveAndFlush so the database state is guaranteed before mapping
+    Interview savedInterview = repo.saveAndFlush(e);
+    
+    System.out.println("DEBUG: Duration in entity is: " + savedInterview.getDuration());
+    
+    // 4. Return the response
+    return mapper.toResponse(savedInterview);
     }
 
     public void cancelInterview(Long id) {
