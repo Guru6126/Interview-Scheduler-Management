@@ -5,26 +5,25 @@ import com.appdev.interviewschedulermanagement.dto.UserResponse;
 import com.appdev.interviewschedulermanagement.model.User;
 import com.appdev.interviewschedulermanagement.mapper.UserMapper;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
+import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
+@Transactional(readOnly = true) // Default: Reads are optimized
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
-
+    @Transactional // Override for write operations
     public UserResponse createUser(UserRequest request) {
+        // Validation checks (keeping these as they are part of your business logic)
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
         }
@@ -36,27 +35,25 @@ public class UserService {
         }
 
         User user = userMapper.toEntity(request);
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponse(savedUser);
+        return userMapper.toResponse(userRepository.save(user));
     }
 
-    @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         return userMapper.toResponse(user);
     }
 
-    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+    @Transactional // Override for write operations
     public UserResponse updateUser(Long id, UserRequest request) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
         existingUser.setFirstName(request.getFirstName());
         existingUser.setLastName(request.getLastName());
@@ -66,21 +63,22 @@ public class UserService {
         existingUser.setIsActive(request.getIsActive());
         existingUser.setTimezone(request.getTimezone());
 
-        User updatedUser = userRepository.save(existingUser);
-        return userMapper.toResponse(updatedUser);
+        return userMapper.toResponse(userRepository.save(existingUser));
     }
 
+    @Transactional // Override for write operations
     public void updateLastLogin(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
     }
 
+    @Transactional // Override for write operations
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with ID: " + id);
-        }
-        userRepository.deleteById(id);
+        // Atomic pattern: Find first, then delete.
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+        userRepository.delete(user);
     }
 }

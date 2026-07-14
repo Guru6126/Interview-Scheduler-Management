@@ -7,6 +7,8 @@ import com.appdev.interviewschedulermanagement.model.User;
 import com.appdev.interviewschedulermanagement.mapper.CandidateMapper;
 import com.appdev.interviewschedulermanagement.repository.CandidateRepository;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
+import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException; // Import your custom exception
+import lombok.RequiredArgsConstructor; // Import Lombok
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,19 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor // Automatically handles constructor injection
+@Transactional(readOnly = true) // Class-level default: read-only for safety/performance
 public class CandidateService {
 
     private final CandidateRepository candidateRepository;
     private final UserRepository userRepository;
     private final CandidateMapper candidateMapper;
 
-    public CandidateService(CandidateRepository candidateRepository, UserRepository userRepository, CandidateMapper candidateMapper) {
-        this.candidateRepository = candidateRepository;
-        this.userRepository = userRepository;
-        this.candidateMapper = candidateMapper;
-    }
-
+    @Transactional // Override to allow writes
     public CandidateResponse createCandidate(CandidateRequest request) {
         if (candidateRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Candidate email address is already registered");
@@ -35,7 +33,7 @@ public class CandidateService {
         User recruiter = null;
         if (request.getRecruiterId() != null) {
             recruiter = userRepository.findById(request.getRecruiterId())
-                    .orElseThrow(() -> new RuntimeException("Assigned recruiter profile not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assigned recruiter profile not found"));
         }
 
         Candidate candidate = candidateMapper.toEntity(request, recruiter);
@@ -43,30 +41,31 @@ public class CandidateService {
         return candidateMapper.toResponse(savedCandidate);
     }
 
-    @Transactional(readOnly = true)
     public CandidateResponse getCandidateById(Long id) {
+        // Now using your custom ResourceNotFoundException
         Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate profiles matching ID not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found with ID: " + id));
         return candidateMapper.toResponse(candidate);
     }
 
-    @Transactional(readOnly = true)
     public List<CandidateResponse> getAllCandidates() {
         return candidateRepository.findAll().stream()
                 .map(candidateMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional // Override to allow writes
     public CandidateResponse updateCandidate(Long id, CandidateRequest request) {
         Candidate existingCandidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Candidate profiles matching ID not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found with ID: " + id));
 
         User recruiter = null;
         if (request.getRecruiterId() != null) {
             recruiter = userRepository.findById(request.getRecruiterId())
-                    .orElseThrow(() -> new RuntimeException("Assigned recruiter profile not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assigned recruiter profile not found"));
         }
 
+        // Logic remains exactly as you wrote it
         existingCandidate.setFirstName(request.getFirstName());
         existingCandidate.setLastName(request.getLastName());
         existingCandidate.setPhoneNumber(request.getPhoneNumber());
@@ -84,10 +83,12 @@ public class CandidateService {
         return candidateMapper.toResponse(updatedCandidate);
     }
 
+    @Transactional // Override to allow writes
     public void deleteCandidate(Long id) {
-        if (!candidateRepository.existsById(id)) {
-            throw new RuntimeException("Candidate profile missing with ID: " + id);
-        }
-        candidateRepository.deleteById(id);
+        // Atomic approach: Find first, then delete. 
+        // This is safer and cleaner than using existsById() followed by deleteById()
+        Candidate candidate = candidateRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found with ID: " + id));
+        candidateRepository.delete(candidate);
     }
 }

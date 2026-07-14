@@ -1,77 +1,77 @@
 package com.appdev.interviewschedulermanagement.service;
 
 import com.appdev.interviewschedulermanagement.dto.*;
+import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException; // Ensure consistent exception
 import com.appdev.interviewschedulermanagement.mapper.InterviewMapper;
 import com.appdev.interviewschedulermanagement.model.*;
 import com.appdev.interviewschedulermanagement.repository.*;
-
-import jakarta.persistence.EntityNotFoundException;
-
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
+@Transactional(readOnly = true) // Optimized for read operations
 public class InterviewService {
+
     private final InterviewRepository repo;
     private final CandidateRepository candidateRepo;
     private final JobPositionRepository jobRepo;
     private final InterviewMapper mapper;
 
-    public InterviewService(InterviewRepository repo, CandidateRepository candidateRepo, JobPositionRepository jobRepo, InterviewMapper mapper) {
-        this.repo = repo; this.candidateRepo = candidateRepo; this.jobRepo = jobRepo; this.mapper = mapper;
-    }
-
+    @Transactional // Override for write operations
     public InterviewResponse scheduleInterview(InterviewRequest req) {
-        var c = candidateRepo.findById(req.getCandidateId()).orElseThrow();
-        var j = jobRepo.findById(req.getJobPositionId()).orElseThrow();
-        return mapper.toResponse(repo.save(mapper.toEntity(req, c, j)));
+        var candidate = candidateRepo.findById(req.getCandidateId())
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate not found: " + req.getCandidateId()));
+        
+        var job = jobRepo.findById(req.getJobPositionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Job position not found: " + req.getJobPositionId()));
+        
+        return mapper.toResponse(repo.save(mapper.toEntity(req, candidate, job)));
     }
 
-    @Transactional(readOnly = true)
     public InterviewResponse getInterviewById(Long id) {
-        return mapper.toResponse(repo.findById(id).orElseThrow());
+        return mapper.toResponse(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with ID: " + id)));
     }
 
-    @Transactional
+    @Transactional // Override for write operations
     public InterviewResponse updateInterviewDetails(Long id, InterviewRequest req) {
-        Interview e = repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Interview not found with id: " + id));
+        Interview existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with ID: " + id));
     
-    // 2. Apply updates
-    e.setScheduledDate(req.getScheduledDate());
-    e.setScheduledTime(req.getScheduledTime());
-    e.setDuration(req.getDuration());
-    e.setMeetingLink(req.getMeetingLink());
-    e.setNotes(req.getNotes());
-    e.setLocation(req.getLocation());
-    
-    // 3. Force the flush to sync with the DB immediately
-    // Use saveAndFlush so the database state is guaranteed before mapping
-    Interview savedInterview = repo.saveAndFlush(e);
-    
-    System.out.println("DEBUG: Duration in entity is: " + savedInterview.getDuration());
-    
-    // 4. Return the response
-    return mapper.toResponse(savedInterview);
+        // Apply updates
+        existing.setScheduledDate(req.getScheduledDate());
+        existing.setScheduledTime(req.getScheduledTime());
+        existing.setDuration(req.getDuration());
+        existing.setMeetingLink(req.getMeetingLink());
+        existing.setNotes(req.getNotes());
+        existing.setLocation(req.getLocation());
+        
+        return mapper.toResponse(repo.saveAndFlush(existing));
     }
 
+    @Transactional // Override for write operations
     public void cancelInterview(Long id) {
-        Interview e = repo.findById(id).orElseThrow();
-        e.setStatus(InterviewStatus.CANCELLED);
-        repo.save(e);
+        Interview interview = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with ID: " + id));
+        interview.setStatus(InterviewStatus.CANCELLED);
+        repo.save(interview);
     }
 
+    @Transactional // Override for write operations
     public InterviewResponse rescheduleInterview(Long id, LocalDate date, LocalTime time) {
-        Interview e = repo.findById(id).orElseThrow();
-        e.setScheduledDate(date);
-        e.setScheduledTime(time);
-        e.setStatus(InterviewStatus.RESCHEDULED);
-        Interview savedInterview = repo.saveAndFlush(e);
-    
-        // 4. Return the response using the SAVED entity
-        return mapper.toResponse(savedInterview);
+        Interview interview = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with ID: " + id));
+        
+        interview.setScheduledDate(date);
+        interview.setScheduledTime(time);
+        interview.setStatus(InterviewStatus.RESCHEDULED);
+        
+        return mapper.toResponse(repo.saveAndFlush(interview));
     }
 }
