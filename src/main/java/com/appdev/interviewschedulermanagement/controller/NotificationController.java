@@ -9,7 +9,7 @@ import com.appdev.interviewschedulermanagement.dto.NotificationRequest;
 import com.appdev.interviewschedulermanagement.dto.NotificationResponse;
 import com.appdev.interviewschedulermanagement.service.NotificationService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+// import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController @RequestMapping("/api/notifications")

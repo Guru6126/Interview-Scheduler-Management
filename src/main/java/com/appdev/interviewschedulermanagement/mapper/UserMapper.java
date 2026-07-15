@@ -5,7 +5,7 @@ import com.appdev.interviewschedulermanagement.dto.UserResponse;
 import com.appdev.interviewschedulermanagement.model.User;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component 
 public class UserMapper {
 
     public User toEntity(UserRequest request) {

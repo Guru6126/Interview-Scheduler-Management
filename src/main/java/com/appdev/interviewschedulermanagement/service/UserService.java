@@ -17,14 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) // Default: Reads are optimized
-public class UserService {
+public class UserService { 
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Transactional // Override for write operations
     public UserResponse createUser(UserRequest request) {
-        // Validation checks (keeping these as they are part of your business logic)
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
         }
