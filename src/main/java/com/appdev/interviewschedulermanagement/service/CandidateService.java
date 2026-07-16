@@ -60,10 +60,10 @@ public class CandidateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found with ID: " + id));
 
         User recruiter = null;
-        // if (request.getRecruiterId() != null) {
+        if (request.getRecruiterId() != null) {
             recruiter = userRepository.findById(request.getRecruiterId())
                     .orElseThrow(() -> new ResourceNotFoundException("Assigned recruiter profile not found"));
-        // }
+        }
 
         // Logic remains exactly as you wrote it
         existingCandidate.setFirstName(request.getFirstName());
