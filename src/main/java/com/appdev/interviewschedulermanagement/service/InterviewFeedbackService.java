@@ -5,6 +5,9 @@ import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundExcepti
 import com.appdev.interviewschedulermanagement.mapper.InterviewFeedbackMapper;
 import com.appdev.interviewschedulermanagement.repository.*;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +40,11 @@ public class InterviewFeedbackService {
     public InterviewFeedbackResponse getFeedbackByInterview(Long interviewId) {
         return mapper.toResponse(repo.findByInterviewId(interviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found for interview: " + interviewId)));
+    }
+
+    public List<InterviewFeedbackResponse> getFeedbackByInterviewer(Long interviewerId) {
+        return repo.findByInterviewerId(interviewerId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }

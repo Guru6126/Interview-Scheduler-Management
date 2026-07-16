@@ -29,7 +29,7 @@ public class InterviewParticipantService {
         var interview = iRepo.findById(req.getInterviewId())
                 .orElseThrow(() -> new ResourceNotFoundException("Interview not found: " + req.getInterviewId()));
         
-        var user = uRepo.findById(req.getUserId())
+        var user = uRepo.findById(req.getUserId()) 
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + req.getUserId()));
         
         return mapper.toResponse(repo.save(mapper.toEntity(req, interview, user)));

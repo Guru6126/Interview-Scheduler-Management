@@ -3,6 +3,9 @@ package com.appdev.interviewschedulermanagement.controller;
 import com.appdev.interviewschedulermanagement.dto.*;
 import com.appdev.interviewschedulermanagement.service.InterviewFeedbackService;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +28,10 @@ public class InterviewFeedbackController {
     @GetMapping("/interview/{interviewId}")
     public ResponseEntity<InterviewFeedbackResponse> getFeedbackByInterview(@PathVariable Long interviewId) {
         return ResponseEntity.ok(service.getFeedbackByInterview(interviewId));
+    }
+
+    @GetMapping("/interviewer/{interviewerId}")
+    public ResponseEntity<List<InterviewFeedbackResponse>> getFeedbackByInterviewer(@PathVariable Long interviewerId) {
+        return ResponseEntity.ok(service.getFeedbackByInterviewer(interviewerId));
     }
 }
