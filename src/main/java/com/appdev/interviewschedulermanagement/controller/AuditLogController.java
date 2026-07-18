@@ -11,7 +11,6 @@ import com.appdev.interviewschedulermanagement.dto.AuditLogRequest;
 import com.appdev.interviewschedulermanagement.dto.AuditLogResponse;
 import com.appdev.interviewschedulermanagement.service.AuditLogService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/api/audit-logs")

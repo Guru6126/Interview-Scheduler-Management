@@ -27,6 +27,8 @@ public class AuditLogService {
     // We keep @Transactional here because this method performs a SAVE (Write)
     @Transactional 
     public AuditLogResponse logAction(AuditLogRequest req) {
+        System.out.println("DEBUG: The request object received is: " + req);
+    System.out.println("DEBUG: The userId in the request is: " + req.getUserId());
         User user = userRepo.findById(req.getUserId())
             .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + req.getUserId()));
         
