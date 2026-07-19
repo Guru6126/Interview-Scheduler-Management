@@ -56,4 +56,5 @@ build/
 hs_err_pid*
 replay_pid*
 
-.env
+#local db configuration
+application-dev.properties

@@ -6,6 +6,9 @@ import com.appdev.interviewschedulermanagement.model.User;
 import com.appdev.interviewschedulermanagement.mapper.UserMapper;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
 import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -17,10 +20,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) // Default: Reads are optimized
-public class UserService { 
+public class UserService implements UserDetailsService{ 
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    }
 
     @Transactional // Override for write operations
     public UserResponse createUser(UserRequest request) {
