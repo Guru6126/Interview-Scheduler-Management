@@ -5,6 +5,7 @@ import com.appdev.interviewschedulermanagement.dto.AuthRequest;
 import com.appdev.interviewschedulermanagement.dto.AuthenticationResponse;
 import com.appdev.interviewschedulermanagement.dto.RegisterRequest;
 import com.appdev.interviewschedulermanagement.enums.UserRole;
+import com.appdev.interviewschedulermanagement.exception.UserNotFoundException;
 import com.appdev.interviewschedulermanagement.model.User;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        var user = repository.findByEmail(request.getEmail()).orElseThrow();
+        var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.getEmail()));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
