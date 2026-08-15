@@ -1,0 +1,118 @@
+/* Global Application Styles */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1e293b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Unified Responsive Page Containers */
+.login-container,
+.dashboard-container,
+.form-page-container,
+.list-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f1f5f9;
+  padding: 2rem;
+}
+
+/* Unified Card Styles */
+.login-card,
+.dashboard-card,
+.form-card,
+.list-card {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Specific Max-Width Override for Smaller Login Card */
+.login-card {
+  max-width: 420px;
+}
+
+/* Specific Max-Width Override for Large Table Lists */
+.list-card {
+  max-width: 1100px;
+}
+
+/* ==========================================
+   Responsive Media Queries for Mobile & Tablet
+   ========================================== */
+
+@media (max-width: 768px) {
+  .login-container,
+  .dashboard-container,
+  .form-page-container,
+  .list-page-container {
+    padding: 1rem;
+    justify-content: flex-start; /* Prevents vertical clipping on smaller viewports */
+  }
+
+  .login-card,
+  .dashboard-card,
+  .form-card,
+  .list-card {
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Stack form rows vertically on tablets/mobiles */
+  .form-row {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .dashboard-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+
+  .list-header-section {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container,
+  .dashboard-container,
+  .form-page-container,
+  .list-page-container {
+    padding: 0.5rem;
+  }
+
+  .login-card,
+  .dashboard-card,
+  .form-card,
+  .list-card {
+    padding: 1.2rem;
+    border-radius: 6px;
+    border: none;
+    box-shadow: none;
+    background-color: #ffffff;
+  }
+}
