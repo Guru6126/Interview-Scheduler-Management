@@ -145,6 +145,42 @@
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
+/* ==========================================
+   Password Input & Eye Toggle Styles
+   ========================================== */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 42px; /* Leaves space so text doesn't overlap the eye icon */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af; /* Simple grey color */
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #4b5563; /* Darker grey on hover */
+}
+
+/* ==========================================
+   Submit Button Styles
+   ========================================== */
 .login-btn {
   background-color: #10b981;
   color: #ffffff;
@@ -201,6 +237,11 @@
   .login-form-section {
     padding: 2.5rem;
   }
+  
+  /* Ensure password input wrapper and toggle scale cleanly on medium screens */
+  .password-input-wrapper input {
+    padding-right: 42px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -220,5 +261,17 @@
 
   .login-header h2 {
     font-size: 1.65rem;
+  }
+
+  /* Compact padding & sizing adjustments for smaller mobile viewports */
+  .form-group input,
+  .password-input-wrapper input {
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    padding-right: 38px;
+  }
+
+  .password-toggle-btn {
+    right: 10px;
   }
 }
