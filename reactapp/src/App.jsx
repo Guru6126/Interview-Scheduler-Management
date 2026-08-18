@@ -3,7 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './pages/auth/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import DashboardLayout from './pages/DashboardLayout';
 import Dashboard from './pages/Dashboard';
+import Candidates from './pages/Candidates'; 
+import Interviews from './pages/Interviews';
+import JobPosts from './pages/JobPosts';
 
 function App() {
   return (
@@ -13,13 +17,17 @@ function App() {
           {/* Redirect root to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           
-          {/* Login Route */}
           <Route path="/login" element={<Login />} />
-          {/* Protected Dashboard with Nested Routes */}
+          
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            {/* You can add more protected pages here later, e.g., <Route path="/candidates" element={<Candidates />} /> */}
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/interviews" element={<Interviews />} />
+              <Route path="/candidates" element={<Candidates />} />
+              <Route path="/jobposts" element={<JobPosts />} />
+            </Route>
           </Route>
+          
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
