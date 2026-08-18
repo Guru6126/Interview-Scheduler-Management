@@ -1,6 +1,5 @@
 package com.appdev.interviewschedulermanagement.config;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +22,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+
+    // Completely bypass this filter for login/register endpoints
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().startsWith("/api/auth/");
+    }
 
     @Override
     protected void doFilterInternal(

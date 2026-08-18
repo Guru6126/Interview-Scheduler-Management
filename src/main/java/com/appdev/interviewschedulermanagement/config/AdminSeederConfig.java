@@ -31,7 +31,7 @@ public class AdminSeederConfig {
                 System.out.println("==================================================");
                 System.out.println("🚀 DEFAULT MASTER ADMIN CREATED SUCCESSFULLY!");
                 System.out.println("Username: admin");
-                System.out.println("Email: admin@interviewschedulermanagement.com");
+                System.out.println("Email: admin@interviewsched.com");
                 System.out.println("Password: AdminPassword123!");
                 System.out.println("==================================================");
             }

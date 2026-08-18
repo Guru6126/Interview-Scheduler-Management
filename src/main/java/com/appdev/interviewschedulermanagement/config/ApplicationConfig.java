@@ -28,7 +28,7 @@ public class ApplicationConfig {
     // finding user in a database by username, if not found, throws an exception
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
+        return usernameOrEmail -> userRepository.findByEmail(usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

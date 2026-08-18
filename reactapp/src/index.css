@@ -15,7 +15,6 @@ html, body, #root {
 
 /* Unified Responsive Page Containers */
 .login-container,
-.dashboard-container,
 .form-page-container,
 .list-page-container {
   display: flex;
@@ -58,11 +57,10 @@ html, body, #root {
 
 @media (max-width: 768px) {
   .login-container,
-  .dashboard-container,
   .form-page-container,
   .list-page-container {
     padding: 1rem;
-    justify-content: flex-start; /* Prevents vertical clipping on smaller viewports */
+    justify-content: flex-start;
   }
 
   .login-card,
@@ -74,7 +72,6 @@ html, body, #root {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
-  /* Stack form rows vertically on tablets/mobiles */
   .form-row {
     flex-direction: column;
     gap: 1.2rem;
@@ -99,7 +96,6 @@ html, body, #root {
 
 @media (max-width: 480px) {
   .login-container,
-  .dashboard-container,
   .form-page-container,
   .list-page-container {
     padding: 0.5rem;

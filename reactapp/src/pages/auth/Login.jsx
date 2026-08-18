@@ -24,6 +24,10 @@ const Login = () => {
 
     try {
       const response = await api.post('/auth/login', credentials);
+      
+      // Clear form values from state upon successful login
+      setCredentials({ email: '', password: '' });
+      
       login(response.data);
       navigate('/dashboard');
     } catch (err) {
@@ -47,7 +51,7 @@ const Login = () => {
         <div className="login-image-section">
           <div className="image-placeholder-box">
             <img 
-              src={loginImage} // 2. Use the imported variable here
+              src={loginImage} 
               alt="Interview System Illustration" 
             />
             <div className="fallback-placeholder" style={{ display: 'none' }}>
@@ -80,6 +84,8 @@ const Login = () => {
                 placeholder="Enter your email"
                 value={credentials.email}
                 onChange={handleChange}
+                autoComplete="off"
+                data-lpignore="true"
                 required
               />
             </div>
@@ -90,10 +96,12 @@ const Login = () => {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'} // Dynamically switch input type
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={credentials.password}
                   onChange={handleChange}
+                  autoComplete="new-password"
+                  data-lpignore="true"
                   required
                 />
                 <button
@@ -124,11 +132,6 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="login-footer">
-            <p>
-              Don't have an account? <Link to="/register">Register here</Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
