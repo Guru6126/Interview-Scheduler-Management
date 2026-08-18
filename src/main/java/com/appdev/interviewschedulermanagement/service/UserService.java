@@ -2,6 +2,7 @@ package com.appdev.interviewschedulermanagement.service;
 
 import com.appdev.interviewschedulermanagement.dto.UserRequest;
 import com.appdev.interviewschedulermanagement.dto.UserResponse;
+import com.appdev.interviewschedulermanagement.enums.UserRole; // Make sure this is imported
 import com.appdev.interviewschedulermanagement.model.User;
 import com.appdev.interviewschedulermanagement.mapper.UserMapper;
 import com.appdev.interviewschedulermanagement.repository.UserRepository;
@@ -9,6 +10,7 @@ import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundExcepti
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder; // 1. Import PasswordEncoder
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -19,11 +21,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true) // Default: Reads are optimized
-public class UserService implements UserDetailsService{ 
+@Transactional(readOnly = true)
+public class UserService implements UserDetailsService { 
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder; // 1. Inject PasswordEncoder
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -31,8 +34,9 @@ public class UserService implements UserDetailsService{
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
-    @Transactional // Override for write operations
+    @Transactional 
     public UserResponse createUser(UserRequest request) {
+        // Unique checks
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
         }
@@ -43,7 +47,18 @@ public class UserService implements UserDetailsService{
             throw new RuntimeException("Employee ID is already assigned");
         }
 
+        // Check if requested role is ADMIN and enforce the max limit of 3
+        if (request.getRole() == UserRole.ADMIN) {
+            long currentAdminCount = userRepository.countByRole(UserRole.ADMIN);
+            if (currentAdminCount >= 3) {
+                throw new RuntimeException("Security Error: Maximum limit of 3 administrators has already been reached!");
+            }
+        }
+
         User user = userMapper.toEntity(request);
+        
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         return userMapper.toResponse(userRepository.save(user));
     }
 
@@ -59,7 +74,7 @@ public class UserService implements UserDetailsService{
                 .toList();
     }
 
-    @Transactional // Override for write operations
+    @Transactional 
     public UserResponse updateUser(Long id, UserRequest request) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
@@ -75,7 +90,7 @@ public class UserService implements UserDetailsService{
         return userMapper.toResponse(userRepository.save(existingUser));
     }
 
-    @Transactional // Override for write operations
+    @Transactional 
     public void updateLastLogin(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
@@ -83,9 +98,8 @@ public class UserService implements UserDetailsService{
         userRepository.save(user);
     }
 
-    @Transactional // Override for write operations
+    @Transactional 
     public void deleteUser(Long id) {
-        // Atomic pattern: Find first, then delete.
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         userRepository.delete(user);
