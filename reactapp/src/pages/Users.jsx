@@ -38,6 +38,18 @@ const Users = () => {
   const isAdmin = roleString.includes('ADMIN');
   const isCoordinator = roleString.includes('COORDINATOR');
 
+  // if (!isAdmin && !isCoordinator) {
+  //   return (
+  //     <div className="content-section" style={{ margin: '64px auto', maxWidth: '600px', textAlign: 'center', background: '#fff', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+  //       <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚫</div>
+  //       <h2 style={{ color: '#1e293b', marginBottom: '8px' }}>Access Denied</h2>
+  //       <p style={{ color: '#64748b', fontSize: '15px' }}>
+  //         You are logged in with an unauthorized role and do not have permission to view the User Management Portal.
+  //       </p>
+  //     </div>
+  //   );
+  // }
+
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);

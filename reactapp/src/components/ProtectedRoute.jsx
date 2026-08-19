@@ -10,9 +10,32 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // Helper to extract roles from token or user object
+  const getUserRoles = () => {
+    try {
+      if (user?.token) {
+        const payload = JSON.parse(atob(user.token.split('.')[1]));
+        const roles = payload.roles || payload.role || [];
+        return Array.isArray(roles) ? roles.map(r => String(r).toUpperCase()) : [String(roles).toUpperCase()];
+      }
+      if (user?.role) {
+        return [String(user.role).toUpperCase()];
+      }
+    } catch (e) {
+      console.error("Error decoding token roles", e);
+    }
+    return [];
+  };
+
   // If roles are specified, check if the user's role is permitted
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
+  if (allowedRoles && allowedRoles.length > 0) {
+    const userRoles = getUserRoles();
+    const hasPermission = allowedRoles.some(role => userRoles.includes(role.toUpperCase()));
+
+    if (!hasPermission) {
+      // Redirect unauthorized users back to dashboard instead of a blank/unauthorized page
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   // Render the child route components if authorized

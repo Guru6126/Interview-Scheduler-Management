@@ -17,15 +17,21 @@ function App() {
         <Routes>
           {/* Redirect root to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          
           <Route path="/login" element={<Login />} />
           
+          {/* General Protected Routes (Any logged-in user can access) */}
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/interviews" element={<Interviews />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/jobposts" element={<JobPosts />} />
+            </Route>
+          </Route>
+
+          {/* Admin & Coordinator Only Route */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'COORDINATOR']} />}>
+            <Route element={<DashboardLayout />}>
               <Route path="/users" element={<Users />} />   
             </Route>
           </Route>
