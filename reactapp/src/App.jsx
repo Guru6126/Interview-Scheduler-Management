@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Candidates from './pages/Candidates'; 
 import Interviews from './pages/Interviews';
 import JobPosts from './pages/JobPosts';
+import Users from './pages/Users'; 
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/interviews" element={<Interviews />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/jobposts" element={<JobPosts />} />
+              <Route path="/users" element={<Users />} />   
             </Route>
           </Route>
           

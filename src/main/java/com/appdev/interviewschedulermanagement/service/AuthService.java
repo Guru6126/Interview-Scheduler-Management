@@ -53,6 +53,10 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         var user = repository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.getEmail()));
+        user.setLastLogin(java.time.LocalDateTime.now()); // Use new Date() if your entity uses java.util.Date instead of LocalDateTime
+        
+        // 2. Save the updated user back to the database
+        repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }

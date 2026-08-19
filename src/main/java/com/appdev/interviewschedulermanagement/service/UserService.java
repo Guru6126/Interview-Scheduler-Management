@@ -36,6 +36,17 @@ public class UserService implements UserDetailsService {
 
     @Transactional 
     public UserResponse createUser(UserRequest request) {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof User) {
+        User currentUser = (User) authentication.getPrincipal();
+        
+        // 2. Enforce role-creation restrictions for Coordinators
+        if (currentUser.getRole() == UserRole.COORDINATOR) {
+            if (request.getRole() == UserRole.ADMIN || request.getRole() == UserRole.COORDINATOR) {
+                throw new RuntimeException("Access Denied: Coordinators can only create Interviewer and Recruiter accounts.");
+            }
+        }
+    }
         // Unique checks
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
@@ -102,6 +113,9 @@ public class UserService implements UserDetailsService {
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+        if ("admin@interviewsched.com".equalsIgnoreCase(user.getEmail())) {
+            throw new RuntimeException("Action prohibited: Cannot delete the Master Admin account!");
+        }
         userRepository.delete(user);
     }
 }
