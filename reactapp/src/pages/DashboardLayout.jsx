@@ -20,7 +20,7 @@ const DashboardLayout = () => {
     <div className="dashboard-container">
       <aside className="dashboard-sidebar">
         <div className="sidebar-brand">
-          <h2>Interview System</h2>
+          <h2>Interview Scheduling & Feedback Management</h2>
         </div>
         <ul className="sidebar-menu">
           <li 
