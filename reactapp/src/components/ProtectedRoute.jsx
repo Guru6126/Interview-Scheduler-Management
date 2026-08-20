@@ -11,15 +11,20 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   // Helper to extract roles from token or user object
+  // Helper to extract roles from token or user object
   const getUserRoles = () => {
     try {
       if (user?.token) {
         const payload = JSON.parse(atob(user.token.split('.')[1]));
         const roles = payload.roles || payload.role || [];
-        return Array.isArray(roles) ? roles.map(r => String(r).toUpperCase()) : [String(roles).toUpperCase()];
+        
+        // Strip 'ROLE_' prefix so "ROLE_ADMIN" becomes "ADMIN"
+        return Array.isArray(roles) 
+          ? roles.map(r => String(r).replace('ROLE_', '').toUpperCase()) 
+          : [String(roles).replace('ROLE_', '').toUpperCase()];
       }
       if (user?.role) {
-        return [String(user.role).toUpperCase()];
+        return [String(user.role).replace('ROLE_', '').toUpperCase()];
       }
     } catch (e) {
       console.error("Error decoding token roles", e);
