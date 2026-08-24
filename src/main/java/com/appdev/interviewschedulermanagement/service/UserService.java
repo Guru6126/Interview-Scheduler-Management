@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder; // 1. Import PasswordEncoder
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,17 +37,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional 
     public UserResponse createUser(UserRequest request) {
-        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null && authentication.getPrincipal() instanceof User) {
-        User currentUser = (User) authentication.getPrincipal();
-        
-        // 2. Enforce role-creation restrictions for Coordinators
-        if (currentUser.getRole() == UserRole.COORDINATOR) {
-            if (request.getRole() == UserRole.ADMIN || request.getRole() == UserRole.COORDINATOR) {
-                throw new RuntimeException("Access Denied: Coordinators can only create Interviewer and Recruiter accounts.");
-            }
-        }
-    }
+        checkNotCoordinator();
         // Unique checks
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
@@ -74,12 +65,14 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponse getUserById(Long id) {
+        checkNotCoordinator();
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         return userMapper.toResponse(user);
     }
 
     public List<UserResponse> getAllUsers() {
+        checkNotCoordinator();
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
@@ -87,6 +80,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional 
     public UserResponse updateUser(Long id, UserRequest request) {
+        checkNotCoordinator();
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
@@ -111,11 +105,22 @@ public class UserService implements UserDetailsService {
 
     @Transactional 
     public void deleteUser(Long id) {
+        checkNotCoordinator();
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         if ("admin@interviewsched.com".equalsIgnoreCase(user.getEmail())) {
             throw new RuntimeException("Action prohibited: Cannot delete the Master Admin account!");
         }
         userRepository.delete(user);
+    }
+
+    private void checkNotCoordinator() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            User currentUser = (User) authentication.getPrincipal();
+            if (currentUser.getRole() == UserRole.COORDINATOR) {
+                throw new AccessDeniedException("Access Denied: Coordinators have no access to user management.");
+            }
+        }
     }
 }

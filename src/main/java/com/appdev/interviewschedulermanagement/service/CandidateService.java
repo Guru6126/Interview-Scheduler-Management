@@ -11,6 +11,8 @@ import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundExcepti
 import lombok.RequiredArgsConstructor; // Import Lombok
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
+import com.appdev.interviewschedulermanagement.enums.UserRole;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +67,28 @@ public class CandidateService {
                     .orElseThrow(() -> new ResourceNotFoundException("Assigned recruiter profile not found"));
         }
 
+        // Enforce Coordinator restrictions
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            User currentUser = (User) authentication.getPrincipal();
+            if (currentUser.getRole() == UserRole.COORDINATOR) {
+                if (!equalsNullable(request.getFirstName(), existingCandidate.getFirstName()) ||
+                    !equalsNullable(request.getLastName(), existingCandidate.getLastName()) ||
+                    !equalsNullable(request.getEmail(), existingCandidate.getEmail()) ||
+                    !equalsNullable(request.getPhoneNumber(), existingCandidate.getPhoneNumber()) ||
+                    !equalsNullable(request.getCurrentPosition(), existingCandidate.getCurrentPosition()) ||
+                    !equalsNullable(request.getCurrentCompany(), existingCandidate.getCurrentCompany()) ||
+                    !equalsNullable(request.getExperienceYears(), existingCandidate.getExperienceYears()) ||
+                    !equalsNullable(request.getExpectedSalary(), existingCandidate.getExpectedSalary()) ||
+                    !equalsNullable(request.getAvailabilityDate(), existingCandidate.getAvailabilityDate()) ||
+                    !equalsNullable(request.getSource(), existingCandidate.getSource()) ||
+                    !equalsNullable(request.getResumeUrl(), existingCandidate.getResumeUrl()) ||
+                    !equalsRecruiter(request.getRecruiterId(), existingCandidate.getRecruiter())) {
+                    throw new AccessDeniedException("Access Denied: Coordinators are only permitted to update candidate status.");
+                }
+            }
+        }
+
         // Logic remains exactly as you wrote it
         existingCandidate.setFirstName(request.getFirstName());
         existingCandidate.setLastName(request.getLastName());
@@ -81,6 +105,21 @@ public class CandidateService {
 
         Candidate updatedCandidate = candidateRepository.save(existingCandidate);
         return candidateMapper.toResponse(updatedCandidate);
+    }
+
+    private boolean equalsNullable(Object a, Object b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        if (a instanceof java.math.BigDecimal && b instanceof java.math.BigDecimal) {
+            return ((java.math.BigDecimal) a).compareTo((java.math.BigDecimal) b) == 0;
+        }
+        return a.equals(b);
+    }
+
+    private boolean equalsRecruiter(Long recruiterId, User recruiter) {
+        if (recruiterId == null && recruiter == null) return true;
+        if (recruiterId == null || recruiter == null) return false;
+        return recruiterId.equals(recruiter.getId());
     }
 
     @Transactional // Override to allow writes

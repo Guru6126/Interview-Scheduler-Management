@@ -70,8 +70,8 @@ const DashboardLayout = () => {
             Job Posts
           </li>
 
-          {/* Users Management: Visible for ADMIN and COORDINATOR roles */}
-          {(isAdmin || isCoordinator) && (
+          {/* Users Management: Visible for ADMIN role */}
+          {isAdmin && (
             <li 
               className={location.pathname === '/users' ? 'active' : ''} 
               onClick={() => navigate('/users')}

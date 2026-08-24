@@ -29,8 +29,8 @@ function App() {
             </Route>
           </Route>
 
-          {/* Admin & Coordinator Only Route */}
-          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'COORDINATOR']} />}>
+          {/* Admin Only Route */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
             <Route element={<DashboardLayout />}>
               <Route path="/users" element={<Users />} />   
             </Route>

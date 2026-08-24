@@ -39,12 +39,14 @@ const Candidates = () => {
 
   const roleString = getUserRole();
   const isAdmin = roleString.includes('ADMIN');
-  // Updated to include COORDINATOR for full Create, Read, and Update privileges
-  const canManage = roleString.includes('ADMIN') || roleString.includes('RECRUITER') || roleString.includes('COORDINATOR');
+  const isCoordinator = roleString.includes('COORDINATOR');
+  // Restrict full management permissions to ADMIN and RECRUITER
+  const canManage = roleString.includes('ADMIN') || roleString.includes('RECRUITER');
 
   // Modal visibility states
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
   
   // Comprehensive form state aligned with Spring Boot CandidateRequest DTO
   const emptyFormState = { 
@@ -123,6 +125,25 @@ const Candidates = () => {
     });
     setShowUpdateModal(true);
   };
+  
+  const openStatusModal = (candidate) => {
+    setSelectedCandidateId(candidate.id);
+    setFormData({ 
+      firstName: candidate.firstName || '', 
+      lastName: candidate.lastName || '', 
+      email: candidate.email || '', 
+      phoneNumber: candidate.phoneNumber || '',
+      status: candidate.status || 'APPLIED',
+      currentPosition: candidate.currentPosition || '',
+      currentCompany: candidate.currentCompany || '',
+      experienceYears: candidate.experienceYears ?? '',
+      expectedSalary: candidate.expectedSalary ?? '',
+      availabilityDate: candidate.availabilityDate || '',
+      source: candidate.source || '',
+      resumeUrl: candidate.resumeUrl || ''
+    });
+    setShowStatusModal(true);
+  };
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
@@ -140,6 +161,25 @@ const Candidates = () => {
       fetchCandidates();
     } catch (error) {
       console.error('Error updating candidate:', error);
+    }
+  };
+  
+  const handleStatusSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...formData,
+        experienceYears: formData.experienceYears !== '' ? Number(formData.experienceYears) : null,
+        expectedSalary: formData.expectedSalary !== '' ? Number(formData.expectedSalary) : null,
+        availabilityDate: formData.availabilityDate || null
+      };
+      await candidateService.updateCandidate(selectedCandidateId, payload);
+      setShowStatusModal(false);
+      setSelectedCandidateId(null);
+      setFormData(emptyFormState);
+      fetchCandidates();
+    } catch (error) {
+      console.error('Error updating candidate status:', error);
     }
   };
 
@@ -190,7 +230,7 @@ const Candidates = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Status</th>
-                {(canManage || isAdmin) && <th>Actions</th>}
+                {(canManage || isAdmin || isCoordinator) && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -218,7 +258,7 @@ const Candidates = () => {
                             {candidate.status}
                           </span>
                         </td>
-                        {(canManage || isAdmin) && (
+                        {(canManage || isAdmin || isCoordinator) && (
                           <td>
                             {canManage && (
                               <button 
@@ -227,6 +267,15 @@ const Candidates = () => {
                                 style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
                               >
                                 Edit
+                              </button>
+                            )}
+                            {isCoordinator && (
+                              <button 
+                                className="edit-btn" 
+                                onClick={() => openStatusModal(candidate)}
+                                style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
+                              >
+                                Update Status
                               </button>
                             )}
                             {isAdmin && (
@@ -245,7 +294,7 @@ const Candidates = () => {
                       {/* Expandable Details Drawer */}
                       {isExpanded && (
                         <tr style={{ background: '#f8fafc' }}>
-                          <td colSpan={(canManage || isAdmin) ? "6" : "5"} style={{ padding: '16px 24px' }}>
+                          <td colSpan={(canManage || isAdmin || isCoordinator) ? "6" : "5"} style={{ padding: '16px 24px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                               <div>
                                 <span style={{ display: 'block', color: '#94a3b8', fontSize: '11px', textTransform: 'uppercase', fontWeight: '700' }}>Current Position</span>
@@ -294,7 +343,7 @@ const Candidates = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={(canManage || isAdmin) ? "6" : "5"} style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>
+                  <td colSpan={(canManage || isAdmin || isCoordinator) ? "6" : "5"} style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>
                     No candidate records found in the database.
                   </td>
                 </tr>
@@ -438,6 +487,40 @@ const Candidates = () => {
               <div className="modal-actions" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                 <button type="submit" className="submit-btn" style={{ background: '#10b981', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Update Record</button>
                 <button type="button" className="cancel-btn" onClick={() => setShowUpdateModal(false)} style={{ background: '#e2e8f0', color: '#334155', padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Update Candidate Status Modal (For Coordinators) */}
+      {showStatusModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3>Update Candidate Status</h3>
+            <p style={{ margin: '8px 0 16px 0', color: '#64748b', fontSize: '14px' }}>
+              Updating status for: <strong>{formData.firstName} {formData.lastName}</strong>
+            </p>
+            <form onSubmit={handleStatusSubmit}>
+              <div className="form-group">
+                <label>Status *</label>
+                <select 
+                  name="status" 
+                  value={formData.status} 
+                  onChange={handleInputChange} 
+                  style={{ padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', width: '100%' }}
+                >
+                  <option value="APPLIED">Applied</option>
+                  <option value="SCREENING">Screening</option>
+                  <option value="INTERVIEWING">Interviewing</option>
+                  <option value="OFFERED">Offered</option>
+                  <option value="HIRED">Hired</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+              </div>
+              <div className="modal-actions" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" className="submit-btn" style={{ background: '#10b981', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Update Status</button>
+                <button type="button" className="cancel-btn" onClick={() => setShowStatusModal(false)} style={{ background: '#e2e8f0', color: '#334155', padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
               </div>
             </form>
           </div>
