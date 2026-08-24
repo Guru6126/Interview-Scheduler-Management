@@ -9,6 +9,7 @@ import Candidates from './pages/Candidates';
 import Interviews from './pages/Interviews';
 import JobPosts from './pages/JobPosts';
 import Users from './pages/Users'; 
+import Settings from './pages/Settings'; // 1. Import your Settings page
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/interviews" element={<Interviews />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/jobposts" element={<JobPosts />} />
+              <Route path="/settings" element={<Settings />} /> 
             </Route>
           </Route>
 

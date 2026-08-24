@@ -9,7 +9,8 @@ import java.math.BigDecimal;
 
 @Data
 public class JobPositionRequest {
-    @NotNull(message = "Creator ID is required")
+    // Optional — the backend resolves the real creator from the SecurityContext.
+    // Keeping this field allows the update flow to carry the original creatorId if needed.
     private Long creatorId;
     @NotBlank(message = "Title is required")
     private String title;
