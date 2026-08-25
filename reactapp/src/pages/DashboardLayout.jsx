@@ -57,9 +57,9 @@ const DashboardLayout = () => {
             margin: '0 0 40px 0',
             fontSize: '16px',
             letterSpacing: '0.5px',
-            color: '#10b981',
+            color: '#f2f5f4ff',
             lineHeight: '1.4',
-            fontWeight: '600'
+            fontWeight: '750'
           }}>
             Interview Scheduling and Feedback Management Application
           </h2>

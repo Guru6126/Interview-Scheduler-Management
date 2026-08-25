@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import loginImage from '../../assets/login.png';
+import logoImg from '../../assets/logo2.png';
 import './Login.css';
 
 const Login = () => {
@@ -68,8 +69,12 @@ const Login = () => {
         {/* Right Side: Form Section */}
         <div className="login-form-section">
           <div className="login-header">
-            <h2>Interview Scheduler and Feedback Management System</h2>
-            <p>Sign in to your account</p>
+            <img 
+              src={logoImg} 
+              alt="SlotScore Logo" 
+              className="login-logo"
+            />
+            {/* <p>Sign in to your account</p> */}
           </div>
 
           {error && <div className="error-alert">{error}</div>}
