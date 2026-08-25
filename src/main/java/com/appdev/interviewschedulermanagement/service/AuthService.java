@@ -45,7 +45,12 @@ public class AuthService {
     repository.save(user);
         
     var jwtToken = jwtService.generateToken(user);
-    return AuthenticationResponse.builder().token(jwtToken).build();
+    return AuthenticationResponse.builder()
+            .token(jwtToken)
+            .userId(user.getId())
+            .email(user.getEmail())
+            .role(user.getRole() != null ? user.getRole().name() : "")
+            .build();
 }
 
     public AuthenticationResponse authenticate(AuthRequest request) {
@@ -58,6 +63,11 @@ public class AuthService {
         // 2. Save the updated user back to the database
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .userId(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole() != null ? user.getRole().name() : "")
+                .build();
     }
 }

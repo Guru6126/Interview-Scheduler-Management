@@ -19,7 +19,7 @@ public class InterviewController {
     public InterviewController(InterviewService service) { this.service = service; }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')") // Full scheduling access
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')") // Full scheduling access
     public ResponseEntity<InterviewResponse> scheduleInterview(@Valid @RequestBody InterviewRequest req) {
         return ResponseEntity.ok(service.scheduleInterview(req));
     }
@@ -31,26 +31,26 @@ public class InterviewController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')") // Update/Manage slots[cite: 1]
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')") // Update/Manage slots
     public ResponseEntity<InterviewResponse> updateInterview(@PathVariable Long id, @Valid @RequestBody InterviewRequest req) {
         return ResponseEntity.ok(service.updateInterviewDetails(id, req));
     }
 
     @DeleteMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')") // Cancel slots[cite: 1]
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')") // Cancel slots
     public ResponseEntity<Void> cancelInterview(@PathVariable Long id) {
         service.cancelInterview(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR', 'INTERVIEWER')") // Track pipeline/view assigned slots[cite: 1]
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR', 'INTERVIEWER')") // Track pipeline/view assigned slots
     public ResponseEntity<List<InterviewResponse>> getAllInterviews() {
         return ResponseEntity.ok(service.getAllInterviews());
     }
 
     @PatchMapping("/{id}/reschedule")
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')") // Reschedule slots[cite: 1]
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')") // Reschedule slots
     public ResponseEntity<InterviewResponse> rescheduleInterview(
             @PathVariable Long id, 
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, 

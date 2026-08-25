@@ -37,7 +37,10 @@ const Availability = () => {
   const isInterviewer = roleString.includes('INTERVIEWER');
   const canManageAll = isAdmin || isRecruiter || isCoordinator;
 
-  const currentUserId = tokenPayload.id || tokenPayload.userId || user?.id;
+  const currentUserId = user?.userId                              // from new login response field
+    || tokenPayload.userId                                          // from new JWT claim
+    || tokenPayload.id                                              // fallback JWT claim name
+    || user?.id;                                                    // legacy fallback
 
   useEffect(() => {
     loadSlots();

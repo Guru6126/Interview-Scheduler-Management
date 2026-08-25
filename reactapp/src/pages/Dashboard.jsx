@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   const tokenPayload = getTokenPayload();
   const roleString = (tokenPayload.roles || tokenPayload.role || user?.role || '').toString().toUpperCase();
-  const currentUserId = tokenPayload.id || tokenPayload.userId || user?.id;
+  const currentUserId = user?.userId || tokenPayload.userId || tokenPayload.id || user?.id;
 
   const isAdmin = roleString.includes('ADMIN');
   const isRecruiter = roleString.includes('RECRUITER');

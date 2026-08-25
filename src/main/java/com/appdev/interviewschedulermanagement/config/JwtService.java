@@ -1,5 +1,6 @@
 package com.appdev.interviewschedulermanagement.config;
 
+import com.appdev.interviewschedulermanagement.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -34,12 +35,17 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        
+
         // Extract roles/authorities and add them to extraClaims
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         extraClaims.put("roles", roles);
+
+        // Embed the database user ID so the frontend can read it directly from the token
+        if (userDetails instanceof User) {
+            extraClaims.put("userId", ((User) userDetails).getId());
+        }
 
         return generateToken(extraClaims, userDetails);
     }

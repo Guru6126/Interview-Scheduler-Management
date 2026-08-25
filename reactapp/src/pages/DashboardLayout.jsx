@@ -39,11 +39,12 @@ const DashboardLayout = () => {
   };
 
   const getUserId = () => {
-    if (user?.id) return user.id;
+    if (user?.userId) return user.userId;        // from new login response field
+    if (user?.id) return user.id;                // legacy fallback
     if (user?.token) {
       try {
         const payload = JSON.parse(atob(user.token.split('.')[1]));
-        return payload.id || payload.userId;
+        return payload.userId || payload.id;     // from JWT claims
       } catch (e) {}
     }
     return null;
