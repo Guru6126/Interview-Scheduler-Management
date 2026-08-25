@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.png';
 import './Dashboard.css';
 
 const DashboardLayout = () => {
@@ -40,31 +41,51 @@ const DashboardLayout = () => {
   return (
     <div className="dashboard-container">
       <aside className="dashboard-sidebar">
-        <div className="sidebar-brand">
-          <h2>Interview Scheduling & Feedback Management</h2>
+        <div className="sidebar-brand" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+          <img
+            src={logoImg}
+            alt="SlotScore Logo"
+            style={{
+              width: '140px',
+              height: '140px',
+              objectFit: 'contain',
+              marginBottom: '-10px',
+              marginTop: '-30px'
+            }}
+          />
+          <h2 style={{
+            margin: '0 0 40px 0',
+            fontSize: '16px',
+            letterSpacing: '0.5px',
+            color: '#10b981',
+            lineHeight: '1.4',
+            fontWeight: '600'
+          }}>
+            Interview Scheduling and Feedback Management Application
+          </h2>
         </div>
         <ul className="sidebar-menu">
-          <li 
-            className={location.pathname === '/dashboard' ? 'active' : ''} 
+          <li
+            className={location.pathname === '/dashboard' ? 'active' : ''}
             onClick={() => navigate('/dashboard')}
           >
             Dashboard
           </li>
-          <li 
-            className={location.pathname === '/interviews' ? 'active' : ''} 
+          <li
+            className={location.pathname === '/interviews' ? 'active' : ''}
             onClick={() => navigate('/interviews')}
           >
             Interviews
           </li>
-          <li 
-            className={location.pathname === '/candidates' ? 'active' : ''} 
+          <li
+            className={location.pathname === '/candidates' ? 'active' : ''}
             onClick={() => navigate('/candidates')}
           >
             Candidates
           </li>
-          
-          <li 
-            className={location.pathname === '/jobposts' ? 'active' : ''} 
+
+          <li
+            className={location.pathname === '/jobposts' ? 'active' : ''}
             onClick={() => navigate('/jobposts')}
           >
             Job Posts
@@ -72,16 +93,16 @@ const DashboardLayout = () => {
 
           {/* Users Management: Visible for ADMIN role */}
           {isAdmin && (
-            <li 
-              className={location.pathname === '/users' ? 'active' : ''} 
+            <li
+              className={location.pathname === '/users' ? 'active' : ''}
               onClick={() => navigate('/users')}
             >
               Users
             </li>
           )}
 
-          <li 
-            className={location.pathname === '/profile' ? 'active' : ''} 
+          <li
+            className={location.pathname === '/profile' ? 'active' : ''}
             onClick={() => navigate('/profile')}
           >
             My Profile
