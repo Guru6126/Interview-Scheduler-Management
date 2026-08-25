@@ -13,13 +13,28 @@
 .dashboard-sidebar {
   width: 260px;
   min-width: 260px;
+  height: 100vh;
+  /* Ensure it takes full height */
   background-color: var(--sidebar-bg);
   color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
+  overflow-y: auto;
+  /* <-- Enables vertical scrolling inside the sidebar */
+  overflow-x: hidden;
   transition: background-color 0.3s ease;
+}
+
+/* Optional: Smooth custom scrollbar for the sidebar */
+.dashboard-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
 }
 
 .sidebar-brand h2 {
@@ -44,7 +59,8 @@
   transition: all 0.2s ease;
 }
 
-.sidebar-menu li.active, .sidebar-menu li:hover {
+.sidebar-menu li.active,
+.sidebar-menu li:hover {
   background-color: #10b981;
   color: #ffffff;
 }
@@ -233,7 +249,8 @@
   min-width: 600px;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--table-border);
   color: var(--table-td-text);
