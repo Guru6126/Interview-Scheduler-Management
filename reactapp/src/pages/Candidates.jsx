@@ -5,7 +5,6 @@ import './Candidates.css';
 
 const Candidates = () => {
   const { user } = useAuth();
-  console.log("Current Logged-in User Object:", user);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
   

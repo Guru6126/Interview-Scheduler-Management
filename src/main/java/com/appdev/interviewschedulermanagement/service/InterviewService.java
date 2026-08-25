@@ -1,7 +1,7 @@
 package com.appdev.interviewschedulermanagement.service;
 
 import com.appdev.interviewschedulermanagement.dto.*;
-import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException; // Ensure consistent exception
+import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException;
 import com.appdev.interviewschedulermanagement.mapper.InterviewMapper;
 import com.appdev.interviewschedulermanagement.model.*;
 import com.appdev.interviewschedulermanagement.repository.*;
@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List; // <-- Added missing import for List
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,13 @@ public class InterviewService {
     private final CandidateRepository candidateRepo;
     private final JobPositionRepository jobRepo;
     private final InterviewMapper mapper;
+
+    // <-- ADDED: Fetches all interviews for the dashboard table view
+    public List<InterviewResponse> getAllInterviews() {
+        return repo.findAll().stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+    }
 
     @Transactional // Override for write operations
     public InterviewResponse scheduleInterview(InterviewRequest req) {
