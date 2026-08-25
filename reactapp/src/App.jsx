@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './pages/auth/Login';
@@ -9,9 +9,19 @@ import Candidates from './pages/Candidates';
 import Interviews from './pages/Interviews';
 import JobPosts from './pages/JobPosts';
 import Users from './pages/Users'; 
-import Settings from './pages/Settings'; // 1. Import your Settings page
+import MyProfile from './pages/MyProfile'; 
 
 function App() {
+  // Apply saved theme preference immediately on app mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -27,7 +37,7 @@ function App() {
               <Route path="/interviews" element={<Interviews />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/jobposts" element={<JobPosts />} />
-              <Route path="/settings" element={<Settings />} /> 
+              <Route path="/profile" element={<MyProfile />} /> 
             </Route>
           </Route>
 

@@ -71,6 +71,13 @@ public class UserService implements UserDetailsService {
         return userMapper.toResponse(user);
     }
 
+    // Used by the /me endpoint — looks up the authenticated user by their email (JWT 'sub' claim)
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return userMapper.toResponse(user);
+    }
+
     public List<UserResponse> getAllUsers() {
         checkNotCoordinator();
         return userRepository.findAll().stream()

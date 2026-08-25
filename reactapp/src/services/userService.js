@@ -23,6 +23,12 @@ export const userService = {
     return response.data;
   },
 
+  // Fetches the profile of the currently authenticated user via JWT — no ID required
+  getCurrentUser: async () => {
+    const response = await axios.get(`${API_URL}/me`, getAuthHeaders());
+    return response.data;
+  },
+
   createUser: async (userData) => {
     const response = await axios.post(API_URL, userData, getAuthHeaders());
     return response.data;

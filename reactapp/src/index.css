@@ -1,12 +1,45 @@
+:root {
+  --bg-color: #f1f5f9;
+  --text-color: #1e293b;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --header-bg: #ffffff;
+  --header-text: #0f172a;
+  --header-border: #e2e8f0;
+  --table-th-bg: #f8fafc;
+  --table-th-text: #475569;
+  --table-td-text: #334155;
+  --table-border: #f1f5f9;
+  --sidebar-bg: #0f172a;
+  --row-hover-bg: #f8fafc;
+}
+
+body.dark-theme {
+  --bg-color: #0f172a;
+  --text-color: #f8fafc;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --header-bg: #1e293b;
+  --header-text: #f8fafc;
+  --header-border: #334155;
+  --table-th-bg: #0f172a;
+  --table-th-text: #94a3b8;
+  --table-td-text: #cbd5e1;
+  --table-border: #334155;
+  --sidebar-bg: #020617;
+  --row-hover-bg: #2d3748;
+}
+
 /* Global Application Styles */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background-color: var(--bg-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1e293b;
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 * {
@@ -23,8 +56,9 @@ html, body, #root {
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background-color: #f1f5f9;
+  background-color: var(--bg-color);
   padding: 2rem;
+  transition: background-color 0.3s ease;
 }
 
 /* Unified Card Styles */
@@ -32,13 +66,14 @@ html, body, #root {
 .dashboard-card,
 .form-card,
 .list-card {
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 2.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 600px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--card-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Specific Max-Width Override for Smaller Login Card */

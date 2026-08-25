@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.security.Principal;
 
 @RestController 
 @RequestMapping("/api/users")
@@ -26,6 +27,14 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
         UserResponse response = userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'INTERVIEWER', 'COORDINATOR')")
+    public ResponseEntity<UserResponse> getCurrentUser(Principal principal) {
+        // principal.getName() returns the JWT 'sub' claim, which is the user's email
+        UserResponse response = userService.getUserByEmail(principal.getName());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

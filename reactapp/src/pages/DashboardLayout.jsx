@@ -81,10 +81,10 @@ const DashboardLayout = () => {
           )}
 
           <li 
-            className={location.pathname === '/settings' ? 'active' : ''} 
-            onClick={() => navigate('/settings')}
+            className={location.pathname === '/profile' ? 'active' : ''} 
+            onClick={() => navigate('/profile')}
           >
-            Settings
+            My Profile
           </li>
         </ul>
         <div className="sidebar-footer">
