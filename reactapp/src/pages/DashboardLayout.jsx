@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
+import { notificationService } from '../services/notificationService';
 import './Dashboard.css';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -34,9 +38,53 @@ const DashboardLayout = () => {
     return '';
   };
 
+  const getUserId = () => {
+    if (user?.id) return user.id;
+    if (user?.token) {
+      try {
+        const payload = JSON.parse(atob(user.token.split('.')[1]));
+        return payload.id || payload.userId;
+      } catch (e) {}
+    }
+    return null;
+  };
+
+  const userId = getUserId();
+
+  useEffect(() => {
+    if (userId) {
+      loadNotifications();
+      // Poll notifications every 30 seconds
+      const interval = setInterval(loadNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userId]);
+
+  const loadNotifications = async () => {
+    try {
+      const data = await notificationService.getUserNotifications(userId);
+      setNotifications(data || []);
+    } catch (e) {
+      console.error("Failed to load notifications", e);
+    }
+  };
+
+  const handleMarkAsRead = async (e, id) => {
+    e.stopPropagation();
+    try {
+      await notificationService.markAsRead(id);
+      loadNotifications();
+    } catch (e) {
+      console.error("Failed to mark notification as read", e);
+    }
+  };
+
   const roleString = getUserRoleString();
   const isAdmin = roleString.includes('ADMIN');
   const isCoordinator = roleString.includes('COORDINATOR');
+  const isRecruiter = roleString.includes('RECRUITER');
+  const canSeeApplications = isAdmin || isRecruiter || isCoordinator;
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <div className="dashboard-container">
@@ -91,6 +139,22 @@ const DashboardLayout = () => {
             Job Posts
           </li>
 
+          {canSeeApplications && (
+            <li
+              className={location.pathname === '/applications' ? 'active' : ''}
+              onClick={() => navigate('/applications')}
+            >
+              Applications
+            </li>
+          )}
+
+          <li
+            className={location.pathname === '/availability' ? 'active' : ''}
+            onClick={() => navigate('/availability')}
+          >
+            Availability
+          </li>
+
           {/* Users Management: Visible for ADMIN role */}
           {isAdmin && (
             <li
@@ -98,6 +162,15 @@ const DashboardLayout = () => {
               onClick={() => navigate('/users')}
             >
               Users
+            </li>
+          )}
+
+          {isAdmin && (
+            <li
+              className={location.pathname === '/audit-logs' ? 'active' : ''}
+              onClick={() => navigate('/audit-logs')}
+            >
+              Audit Logs
             </li>
           )}
 
@@ -113,8 +186,100 @@ const DashboardLayout = () => {
         </div>
       </aside>
 
-      <main className="dashboard-main">
-        <Outlet />
+      <main className="dashboard-main" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <header className="top-bar" style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          padding: '12px 32px',
+          background: 'var(--header-bg, #ffffff)',
+          borderBottom: '1px solid var(--header-border, #e2e8f0)',
+          position: 'relative'
+        }}>
+          {/* Notification Bell Icon */}
+          <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowDropdown(!showDropdown)}>
+            <span style={{ fontSize: '22px' }}>🔔</span>
+            {unreadCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                background: '#ef4444',
+                color: '#fff',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '10px',
+                fontWeight: 'bold'
+              }}>
+                {unreadCount}
+              </span>
+            )}
+            
+            {/* Floating Dropdown Panel */}
+            {showDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: '36px',
+                right: 0,
+                width: '320px',
+                background: 'var(--card-bg, #ffffff)',
+                border: '1px solid var(--card-border, #cbd5e1)',
+                borderRadius: '8px',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                zIndex: 1000,
+                maxHeight: '360px',
+                overflowY: 'auto'
+              }} onClick={(e) => e.stopPropagation()}>
+                <div style={{ padding: '12px', borderBottom: '1px solid var(--card-border, #cbd5e1)', fontWeight: 'bold', color: 'var(--header-text, #0f172a)' }}>
+                  Notifications
+                </div>
+                <div style={{ padding: '4px 0' }}>
+                  {notifications.length === 0 ? (
+                    <div style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>No alerts</div>
+                  ) : (
+                    notifications.map(item => (
+                      <div key={item.id} style={{
+                        padding: '12px',
+                        borderBottom: '1px solid var(--card-border, #f1f5f9)',
+                        background: item.isRead ? 'transparent' : 'rgba(16, 185, 129, 0.08)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-color, #1e293b)' }}>{item.title}</span>
+                          {!item.isRead && (
+                            <button
+                              onClick={(e) => handleMarkAsRead(e, item.id)}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#10b981',
+                                fontSize: '11px',
+                                cursor: 'pointer',
+                                padding: '2px 6px',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              ✓
+                            </button>
+                          )}
+                        </div>
+                        <p style={{ margin: 0, fontSize: '12px', color: '#64748b', lineHeight: '1.4' }}>{item.message}</p>
+                        <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                          {item.createdDate ? new Date(item.createdDate).toLocaleString() : ''}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </header>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

@@ -10,6 +10,9 @@ import Interviews from './pages/Interviews';
 import JobPosts from './pages/JobPosts';
 import Users from './pages/Users'; 
 import MyProfile from './pages/MyProfile'; 
+import Availability from './pages/Availability';
+import JobApplications from './pages/JobApplications';
+import AuditLogs from './pages/AuditLogs'; 
 
 function App() {
   // Apply saved theme preference immediately on app mount
@@ -37,6 +40,8 @@ function App() {
               <Route path="/interviews" element={<Interviews />} />
               <Route path="/candidates" element={<Candidates />} />
               <Route path="/jobposts" element={<JobPosts />} />
+              <Route path="/availability" element={<Availability />} />
+              <Route path="/applications" element={<JobApplications />} />
               <Route path="/profile" element={<MyProfile />} /> 
             </Route>
           </Route>
@@ -44,7 +49,8 @@ function App() {
           {/* Admin Only Route */}
           <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
             <Route element={<DashboardLayout />}>
-              <Route path="/users" element={<Users />} />   
+              <Route path="/users" element={<Users />} />
+              <Route path="/audit-logs" element={<AuditLogs />} />
             </Route>
           </Route>
           

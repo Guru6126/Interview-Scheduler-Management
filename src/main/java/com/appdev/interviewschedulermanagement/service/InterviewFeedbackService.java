@@ -4,6 +4,7 @@ import com.appdev.interviewschedulermanagement.dto.*;
 import com.appdev.interviewschedulermanagement.exception.ResourceNotFoundException;
 import com.appdev.interviewschedulermanagement.mapper.InterviewFeedbackMapper;
 import com.appdev.interviewschedulermanagement.repository.*;
+import com.appdev.interviewschedulermanagement.model.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public class InterviewFeedbackService {
     private final InterviewRepository interviewRepo;
     private final UserRepository userRepo;
     private final InterviewFeedbackMapper mapper;
+    private final NotificationRepository notificationRepo;
+    private final AuditLogService auditLogService;
 
     @Transactional // Override to allow writes for submission
     public InterviewFeedbackResponse submitFeedback(InterviewFeedbackRequest req) {
@@ -28,8 +31,37 @@ public class InterviewFeedbackService {
         
         var interviewer = userRepo.findById(req.getInterviewerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Interviewer not found with ID: " + req.getInterviewerId()));
+
+        // Mark interview as COMPLETED
+        interview.setStatus(com.appdev.interviewschedulermanagement.enums.InterviewStatus.COMPLETED);
+        interviewRepo.save(interview);
         
-        return mapper.toResponse(repo.save(mapper.toEntity(req, interview, interviewer)));
+        var response = mapper.toResponse(repo.save(mapper.toEntity(req, interview, interviewer)));
+
+        // Notify recruiter
+        var recruiter = interview.getCandidate().getRecruiter();
+        if (recruiter != null) {
+            Notification notification = new Notification();
+            notification.setUser(recruiter);
+            notification.setTitle("Interview Feedback Submitted");
+            notification.setMessage("Interviewer " + interviewer.getFirstName() + " " + interviewer.getLastName() + " has submitted feedback for candidate " + interview.getCandidate().getFirstName() + " " + interview.getCandidate().getLastName() + ".");
+            notification.setType(com.appdev.interviewschedulermanagement.enums.NotificationType.FEEDBACK_SUBMITTED);
+            notification.setIsRead(false);
+            notification.setCreatedDate(java.time.LocalDateTime.now());
+            notification.setSentDate(java.time.LocalDateTime.now());
+            notificationRepo.save(notification);
+        }
+
+        // Audit log
+        auditLogService.logEvent(
+            interviewer.getId(), 
+            "SUBMIT_FEEDBACK", 
+            "InterviewFeedback", 
+            interview.getId(), 
+            "Submitted feedback for candidate " + interview.getCandidate().getFirstName() + " " + interview.getCandidate().getLastName()
+        );
+
+        return response;
     }
 
     public InterviewFeedbackResponse getFeedbackById(Long id) {

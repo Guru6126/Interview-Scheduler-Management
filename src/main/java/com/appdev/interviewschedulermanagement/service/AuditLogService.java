@@ -44,4 +44,27 @@ public class AuditLogService {
     public List<AuditLogResponse> getLogsByEntity(String entityType, Long entityId) {
         return repo.findByEntityTypeAndEntityId(entityType, entityId).stream().map(mapper::toResponse).toList();
     }
+
+    @Transactional
+    public void logEvent(Long userId, String action, String entityType, Long entityId, String details) {
+        User user = null;
+        if (userId != null) {
+            user = userRepo.findById(userId).orElse(null);
+        }
+        AuditLog auditLog = new AuditLog();
+        auditLog.setUser(user);
+        auditLog.setAction(action);
+        auditLog.setEntityType(entityType);
+        auditLog.setEntityId(entityId);
+        auditLog.setDetails(details);
+        auditLog.setTimestamp(java.time.LocalDateTime.now());
+        repo.save(auditLog);
+    }
+
+    public List<AuditLogResponse> getAllLogs() {
+        return repo.findAll().stream()
+                .sorted((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()))
+                .map(mapper::toResponse)
+                .toList();
+    }
 }

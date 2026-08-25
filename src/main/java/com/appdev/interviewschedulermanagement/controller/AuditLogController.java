@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.appdev.interviewschedulermanagement.dto.AuditLogRequest;
 import com.appdev.interviewschedulermanagement.dto.AuditLogResponse;
 import com.appdev.interviewschedulermanagement.service.AuditLogService;
@@ -18,6 +19,12 @@ public class AuditLogController {
     private final AuditLogService service;
 
     public AuditLogController(AuditLogService service) { this.service = service; }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AuditLogResponse>> getAllLogs() {
+        return ResponseEntity.ok(service.getAllLogs());
+    }
 
     @PostMapping
     public ResponseEntity<AuditLogResponse> logAction(@RequestBody AuditLogRequest req) {

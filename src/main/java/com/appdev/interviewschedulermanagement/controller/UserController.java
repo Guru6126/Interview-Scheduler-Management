@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.appdev.interviewschedulermanagement.enums.UserRole;
 import java.util.List;
 import java.security.Principal;
 
@@ -63,6 +64,12 @@ public class UserController {
     public ResponseEntity<Void> recordLogin(@PathVariable Long id) {
         userService.updateLastLogin(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/role/{role}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')")
+    public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable UserRole role) {
+        return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 
     @DeleteMapping("/{id}")

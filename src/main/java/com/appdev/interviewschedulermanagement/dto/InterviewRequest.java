@@ -19,4 +19,5 @@ public class InterviewRequest {
     private String location;
     private InterviewStatus status;
     private String notes;
+    private Long interviewerId;
 }

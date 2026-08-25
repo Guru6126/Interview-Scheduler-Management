@@ -8,11 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/job-applications")
 public class JobApplicationController {
     private final JobApplicationService service;
     public JobApplicationController(JobApplicationService service) { this.service = service; }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER', 'COORDINATOR')")
+    public ResponseEntity<List<JobApplicationResponse>> getAllApplications() {
+        return ResponseEntity.ok(service.getAllApplications());
+    }
 
     @PostMapping
     public ResponseEntity<JobApplicationResponse> applyToJob(@Valid @RequestBody JobApplicationRequest req) {

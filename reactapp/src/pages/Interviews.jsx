@@ -202,7 +202,7 @@ const Interviews = () => {
                             fontWeight: '600',
                             cursor: 'pointer',
                             marginRight: '10px'
-                          }}
+                          }}  
                           onClick={() => {
                             setSelectedInterview(item);
                             setIsFeedbackModalOpen(true);

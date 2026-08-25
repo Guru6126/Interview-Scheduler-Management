@@ -110,6 +110,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public List<UserResponse> getUsersByRole(UserRole role) {
+        return userRepository.findByRole(role).stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
     @Transactional 
     public void deleteUser(Long id) {
         checkNotCoordinator();

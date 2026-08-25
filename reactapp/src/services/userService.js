@@ -18,6 +18,11 @@ export const userService = {
     return response.data;
   },
 
+  getUsersByRole: async (role) => {
+    const response = await axios.get(`${API_URL}/role/${role}`, getAuthHeaders());
+    return response.data;
+  },
+
   getUserById: async (id) => {
     const response = await axios.get(`${API_URL}/${id}`, getAuthHeaders());
     return response.data;

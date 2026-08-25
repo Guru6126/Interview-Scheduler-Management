@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { jobService } from '../services/jobService';
 import { candidateService } from '../services/candidateService';
+import { userService } from '../services/userService';
 
 export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -8,11 +9,13 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
     jobPositionId: '',
     interviewDate: '',
     interviewType: 'ONLINE',
-    meetingLink: ''
+    meetingLink: '',
+    interviewerId: ''
   });
 
   const [jobs, setJobs] = useState([]);
   const [candidates, setCandidates] = useState([]);
+  const [interviewers, setInterviewers] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -22,7 +25,8 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
         jobPositionId: '',
         interviewDate: '',
         interviewType: 'ONLINE',
-        meetingLink: ''
+        meetingLink: '',
+        interviewerId: ''
       });
     }
   }, [isOpen]);
@@ -34,6 +38,9 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
 
       const candidateData = await candidateService.getAllCandidates();
       setCandidates(candidateData);
+
+      const interviewerData = await userService.getUsersByRole('INTERVIEWER');
+      setInterviewers(interviewerData || []);
     } catch (error) {
       console.error("Failed to load modal dropdown data:", error);
     }
@@ -55,7 +62,8 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
       scheduledTime: `${timePart}:00`, // Format as "HH:mm:ss"
       interviewType: formData.interviewType,
       meetingLink: formData.meetingLink || '',
-      status: "SCHEDULED"
+      status: "SCHEDULED",
+      interviewerId: formData.interviewerId ? Number(formData.interviewerId) : null
     };
 
     console.log("Outgoing Schedule Interview Payload:", payload);
@@ -108,6 +116,24 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
               {jobs.map(job => (
                 <option key={job.id} value={job.id}>
                   {job.title} ({job.department})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Interviewer Selection */}
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', marginBottom: '6px', color: '#94a3b8' }}>Select Interviewer</label>
+            <select 
+              value={formData.interviewerId} 
+              onChange={(e) => setFormData({ ...formData, interviewerId: e.target.value })}
+              style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'var(--bg-color, #0f172a)', border: '1px solid var(--card-border, #334155)', color: 'var(--text-color, #fff)' }}
+              required
+            >
+              <option value="">-- Choose Interviewer --</option>
+              {interviewers.map(intv => (
+                <option key={intv.id} value={intv.id}>
+                  {intv.firstName} {intv.lastName} ({intv.email})
                 </option>
               ))}
             </select>

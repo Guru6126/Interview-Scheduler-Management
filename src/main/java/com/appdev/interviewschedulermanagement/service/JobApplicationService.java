@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.appdev.interviewschedulermanagement.model.User;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) // Default: Reads are optimized
@@ -20,6 +22,21 @@ public class JobApplicationService {
     private final CandidateRepository candidateRepo;
     private final JobPositionRepository jobRepo;
     private final JobApplicationMapper mapper;
+    private final AuditLogService auditLogService;
+
+    private Long getCurrentUserId() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof User) {
+            return ((User) auth.getPrincipal()).getId();
+        }
+        return null;
+    }
+
+    public List<JobApplicationResponse> getAllApplications() {
+        return repo.findAll().stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
 
     @Transactional // Override to allow writes
     public JobApplicationResponse applyToJob(JobApplicationRequest req) {
@@ -29,7 +46,17 @@ public class JobApplicationService {
         var job = jobRepo.findById(req.getJobPositionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job position not found with ID: " + req.getJobPositionId()));
         
-        return mapper.toResponse(repo.save(mapper.toEntity(req, candidate, job)));
+        var response = mapper.toResponse(repo.save(mapper.toEntity(req, candidate, job)));
+
+        auditLogService.logEvent(
+            getCurrentUserId(), 
+            "APPLY_JOB", 
+            "JobApplication", 
+            response.getId(), 
+            "Candidate " + candidate.getFirstName() + " " + candidate.getLastName() + " applied for job " + job.getTitle()
+        );
+
+        return response;
     }
 
     public JobApplicationResponse getApplicationById(Long id) {
@@ -42,8 +69,19 @@ public class JobApplicationService {
         var application = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job application not found with ID: " + id));
         
+        JobApplicationStatus oldStatus = application.getStatus();
         application.setStatus(status);
-        return mapper.toResponse(repo.save(application));
+        var updated = mapper.toResponse(repo.save(application));
+
+        auditLogService.logEvent(
+            getCurrentUserId(), 
+            "UPDATE_APPLICATION_STATUS", 
+            "JobApplication", 
+            id, 
+            "Updated application status for candidate " + application.getCandidate().getFirstName() + " " + application.getCandidate().getLastName() + " from " + oldStatus + " to " + status
+        );
+
+        return updated;
     }
 
     // Inherits readOnly = true from class level
