@@ -102,12 +102,14 @@ Ensure you have the following installed locally:
    CREATE DATABASE interviewschedulermanagement;
    ```
 
-2. Update database credentials in `src/main/resources/application.properties` (if required):
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/interviewschedulermanagement?createDatabaseIfNotExist=true
-   spring.datasource.username=root
-   spring.datasource.password=your_password
-   ```
+2. **Configure Database Credentials**:
+   - Option A: Directly update your credentials in `src/main/resources/application.properties`:
+     ```properties
+     spring.datasource.url=jdbc:mysql://localhost:3306/interviewschedulermanagement?createDatabaseIfNotExist=true
+     spring.datasource.username=your_username
+     spring.datasource.password=your_password
+     ```
+   - Option B (Recommended for Local Dev): Create a custom properties file named `src/main/resources/application-dev.properties` to store your database credentials. Make sure to add `application-dev.properties` to `.gitignore` so your secret credentials are not committed to source control.
 
 3. Run the Spring Boot backend server:
    ```bash
