@@ -22,6 +22,7 @@ const AuditLogs = () => {
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState('ALL');
   const [page, setPage] = useState(1);
+  const [expandedLog, setExpandedLog] = useState(null);
   const PER_PAGE = 20;
 
   useEffect(() => {
@@ -146,7 +147,23 @@ const AuditLogs = () => {
                       <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--table-td-text, #334155)', fontWeight: '500' }}>{log.entityType || '—'}</td>
                       <td style={{ padding: '12px 16px', fontSize: '13px', color: '#64748b' }}>#{log.entityId || '—'}</td>
                       <td style={{ padding: '12px 16px', fontSize: '13px', color: '#64748b' }}>{log.userId ? `User #${log.userId}` : 'System'}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '12px', color: '#64748b', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={log.details}>{log.details || '—'}</td>
+                      <td
+                        onClick={() => log.details && setExpandedLog(log)}
+                        title={log.details ? 'Click to expand' : ''}
+                        style={{
+                          padding: '12px 16px',
+                          fontSize: '12px',
+                          color: log.details ? 'var(--table-td-text, #334155)' : '#94a3b8',
+                          maxWidth: '280px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          cursor: log.details ? 'pointer' : 'default',
+                          textDecoration: log.details ? 'underline dotted #94a3b8' : 'none'
+                        }}
+                      >
+                        {log.details || '—'}
+                      </td>
                     </tr>
                   );
                 }) : (
@@ -180,6 +197,68 @@ const AuditLogs = () => {
             </div>
           )}
         </>
+      )}
+      {/* Detail Expand Modal */}
+      {expandedLog && (
+        <div
+          onClick={() => setExpandedLog(null)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2000
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--card-bg, #fff)',
+              border: '1px solid var(--card-border, #e2e8f0)',
+              borderRadius: '14px',
+              padding: '28px 32px',
+              maxWidth: '580px',
+              width: '90%',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700',
+                    background: getActionMeta(expandedLog.action).bg,
+                    color: getActionMeta(expandedLog.action).color
+                  }}>
+                    {getActionMeta(expandedLog.action).icon} {(expandedLog.action || '').replace(/_/g, ' ')}
+                  </span>
+                  <span style={{ fontSize: '12px', color: '#94a3b8' }}>{formatTimestamp(expandedLog.timestamp)}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  {expandedLog.entityType} #{expandedLog.entityId} &nbsp;·&nbsp; {expandedLog.userId ? `User #${expandedLog.userId}` : 'System'}
+                </div>
+              </div>
+              <button
+                onClick={() => setExpandedLog(null)}
+                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#94a3b8', lineHeight: 1, padding: '0 4px' }}
+              >✕</button>
+            </div>
+            {/* Full Details */}
+            <div style={{
+              background: 'var(--bg-color, #f8fafc)',
+              border: '1px solid var(--card-border, #e2e8f0)',
+              borderRadius: '8px',
+              padding: '14px 16px',
+              fontSize: '13px',
+              color: 'var(--text-color, #334155)',
+              lineHeight: '1.7',
+              wordBreak: 'break-word'
+            }}>
+              {expandedLog.details}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
