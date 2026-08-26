@@ -44,6 +44,16 @@ public class AvailabilityController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/available-interviewers")
+    public ResponseEntity<List<com.appdev.interviewschedulermanagement.dto.UserResponse>> getAvailableInterviewers(
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date,
+            @RequestParam String time,
+            @RequestParam(required = false, defaultValue = "60") Integer duration) {
+        java.time.LocalTime parsedTime = java.time.LocalTime.parse(time.length() > 8 ? time.substring(11, 19) : (time.length() == 5 ? time + ":00" : time));
+        List<com.appdev.interviewschedulermanagement.dto.UserResponse> response = availabilityService.getAvailableInterviewers(date, parsedTime, duration);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AvailabilityResponse> updateAvailability(
             @PathVariable Long id, 

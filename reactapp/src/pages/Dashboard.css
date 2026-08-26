@@ -4,7 +4,7 @@
   height: 100vh;
   overflow: hidden;
   background-color: var(--bg-color);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--app-font-family);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }

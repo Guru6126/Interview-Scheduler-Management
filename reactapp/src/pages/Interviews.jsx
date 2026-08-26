@@ -191,9 +191,8 @@ const Interviews = () => {
                       </span>
                     </td>
                     <td style={{ padding: '12px' }}>
-                      {/* Feedback Action */}
                       {/* Feedback Action (View or Add) */}
-                      {canProvideFeedback && item.status === 'COMPLETED' && (
+                      {canProvideFeedback && item.status !== 'CANCELLED' && (
                         <button
                           style={{
                             background: 'none',
@@ -208,12 +207,17 @@ const Interviews = () => {
                             setIsFeedbackModalOpen(true);
                           }}
                         >
-                          {item.feedback ? 'View Feedback' : 'Add Feedback'}
+                          {item.feedback ? 'View Feedback' : (item.status === 'COMPLETED' ? 'Add Feedback' : 'Submit Feedback')}
                         </button>
                       )}
 
-                      {/* Reschedule Action */}
-                      {canModifyInterviews && item.status !== 'CANCELLED' && (
+                      {/* Display N/A for CANCELLED interviews or COMPLETED interviews without feedback access */}
+                      {(item.status === 'CANCELLED' || (!canProvideFeedback && item.status === 'COMPLETED')) && (
+                        <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                      )}
+
+                      {/* Reschedule Action (Only for active sessions: SCHEDULED/CONFIRMED/RESCHEDULED) */}
+                      {canModifyInterviews && item.status !== 'CANCELLED' && item.status !== 'COMPLETED' && (
                         <button
                           style={{ background: 'none', border: 'none', color: '#f59e0b', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
                           onClick={() => handleReschedule(item)}
@@ -222,8 +226,8 @@ const Interviews = () => {
                         </button>
                       )}
 
-                      {/* Cancel Action */}
-                      {canModifyInterviews && item.status !== 'CANCELLED' && (
+                      {/* Cancel Action (Only for active sessions: SCHEDULED/CONFIRMED/RESCHEDULED) */}
+                      {canModifyInterviews && item.status !== 'CANCELLED' && item.status !== 'COMPLETED' && (
                         <button
                           style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: '600', cursor: 'pointer' }}
                           onClick={() => handleCancelInterview(item.id)}

@@ -23,6 +23,7 @@ public class InterviewFeedbackService {
     private final InterviewFeedbackMapper mapper;
     private final NotificationRepository notificationRepo;
     private final AuditLogService auditLogService;
+    private final JobApplicationRepository jobApplicationRepo;
 
     @Transactional // Override to allow writes for submission
     public InterviewFeedbackResponse submitFeedback(InterviewFeedbackRequest req) {
@@ -32,11 +33,40 @@ public class InterviewFeedbackService {
         var interviewer = userRepo.findById(req.getInterviewerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Interviewer not found with ID: " + req.getInterviewerId()));
 
-        // Mark interview as COMPLETED
+        // 1. Mark interview as COMPLETED
         interview.setStatus(com.appdev.interviewschedulermanagement.enums.InterviewStatus.COMPLETED);
         interviewRepo.save(interview);
         
-        var response = mapper.toResponse(repo.save(mapper.toEntity(req, interview, interviewer)));
+        var savedFeedback = repo.save(mapper.toEntity(req, interview, interviewer));
+        interview.setFeedback(savedFeedback);
+        var response = mapper.toResponse(savedFeedback);
+
+        // 2. Automated Pipeline Status Transition: Synchronize linked JobApplication status
+        if (interview.getCandidate() != null && interview.getJobPosition() != null) {
+            var applicationOpt = jobApplicationRepo.findByCandidateIdAndJobPositionId(
+                    interview.getCandidate().getId(),
+                    interview.getJobPosition().getId()
+            );
+
+            if (applicationOpt.isPresent()) {
+                var application = applicationOpt.get();
+                var oldAppStatus = application.getStatus();
+                var newAppStatus = determineApplicationStatus(req.getRecommendation(), req.getOverallRating());
+
+                if (newAppStatus != null && newAppStatus != oldAppStatus) {
+                    application.setStatus(newAppStatus);
+                    jobApplicationRepo.save(application);
+
+                    auditLogService.logEvent(
+                        interviewer.getId(),
+                        "UPDATE_APPLICATION_STATUS",
+                        "JobApplication",
+                        application.getId(),
+                        "Automated status transition for candidate " + interview.getCandidate().getFirstName() + " " + interview.getCandidate().getLastName() + " from " + oldAppStatus + " to " + newAppStatus + " upon feedback submission"
+                    );
+                }
+            }
+        }
 
         // Notify recruiter
         var recruiter = interview.getCandidate().getRecruiter();
@@ -62,6 +92,31 @@ public class InterviewFeedbackService {
         );
 
         return response;
+    }
+
+    private com.appdev.interviewschedulermanagement.enums.JobApplicationStatus determineApplicationStatus(String recommendation, Integer overallRating) {
+        if (recommendation != null) {
+            String recUpper = recommendation.trim().toUpperCase();
+            if (recUpper.contains("RECOMMEND") && !recUpper.contains("NOT") && !recUpper.contains("REJECT")) {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.SHORTLISTED;
+            } else if (recUpper.contains("REJECT")) {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REJECTED;
+            } else if (recUpper.contains("HOLD")) {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REVIEWING;
+            }
+        }
+
+        if (overallRating != null) {
+            if (overallRating >= 4) {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.SHORTLISTED;
+            } else if (overallRating <= 2) {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REJECTED;
+            } else {
+                return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REVIEWING;
+            }
+        }
+
+        return com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.SHORTLISTED;
     }
 
     public InterviewFeedbackResponse getFeedbackById(Long id) {

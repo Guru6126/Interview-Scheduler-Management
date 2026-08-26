@@ -26,8 +26,16 @@ export const availabilityService = {
     return response.data;
   },
 
+  getAvailableInterviewers: async (date, time, duration = 60) => {
+    const response = await api.get('/availabilities/available-interviewers', {
+      params: { date, time, duration }
+    });
+    return response.data;
+  },
+
   deleteAvailability: async (id) => {
     const response = await api.delete(`/availabilities/${id}`);
     return response.data;
   }
 };
+

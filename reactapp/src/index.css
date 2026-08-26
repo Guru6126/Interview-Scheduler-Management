@@ -12,6 +12,8 @@
   --table-border: #f1f5f9;
   --sidebar-bg: #0f172a;
   --row-hover-bg: #f8fafc;
+  --app-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --app-font-size: 14px;
 }
 
 body.dark-theme {
@@ -37,9 +39,14 @@ html, body, #root {
   width: 100%;
   min-height: 100vh;
   background-color: var(--bg-color);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size);
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, font-size 0.2s ease, font-family 0.2s ease;
+}
+
+button, input, select, textarea, table, th, td {
+  font-family: inherit;
 }
 
 * {

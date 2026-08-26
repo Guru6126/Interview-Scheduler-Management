@@ -5,10 +5,15 @@ import com.appdev.interviewschedulermanagement.dto.InterviewResponse;
 import com.appdev.interviewschedulermanagement.model.Candidate;
 import com.appdev.interviewschedulermanagement.model.Interview;
 import com.appdev.interviewschedulermanagement.model.JobPosition;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class InterviewMapper {
+
+    private final InterviewFeedbackMapper feedbackMapper;
+
     public Interview toEntity(InterviewRequest req, Candidate candidate, JobPosition jobPosition) {
         Interview i = new Interview();
         i.setCandidate(candidate);
@@ -40,6 +45,21 @@ public class InterviewMapper {
         r.setStatus(e.getStatus());
         r.setNotes(e.getNotes());
         r.setCreatedDate(e.getCreatedDate());
+
+        // Extract interviewer info from participants if present
+        if (e.getParticipants() != null) {
+            for (var p : e.getParticipants()) {
+                if (p.getRole() == com.appdev.interviewschedulermanagement.enums.ParticipantRole.INTERVIEWER && p.getUser() != null) {
+                    r.setInterviewerId(p.getUser().getId());
+                    r.setInterviewerName(p.getUser().getFirstName() + " " + p.getUser().getLastName());
+                    break;
+                }
+            }
+        }
+
+        if (e.getFeedback() != null) {
+            r.setFeedback(feedbackMapper.toResponse(e.getFeedback()));
+        }
         return r;
     }
 }

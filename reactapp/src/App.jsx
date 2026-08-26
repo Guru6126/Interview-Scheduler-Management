@@ -15,7 +15,7 @@ import JobApplications from './pages/JobApplications';
 import AuditLogs from './pages/AuditLogs'; 
 
 function App() {
-  // Apply saved theme preference immediately on app mount
+  // Apply saved theme and font preferences immediately on app mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -23,6 +23,12 @@ function App() {
     } else {
       document.body.classList.remove('dark-theme');
     }
+
+    const savedFontSize = localStorage.getItem('fontSize') || '14px';
+    const savedFontFamily = localStorage.getItem('fontFamily') || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+
+    document.documentElement.style.setProperty('--app-font-size', savedFontSize);
+    document.documentElement.style.setProperty('--app-font-family', savedFontFamily);
   }, []);
 
   return (

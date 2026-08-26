@@ -23,4 +23,7 @@ public class InterviewResponse {
     private InterviewStatus status;
     private String notes;
     private LocalDateTime createdDate;
+    private Long interviewerId;
+    private String interviewerName;
+    private InterviewFeedbackResponse feedback;
 }

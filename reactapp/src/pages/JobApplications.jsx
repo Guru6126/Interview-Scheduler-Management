@@ -9,10 +9,10 @@ const PIPELINE_STAGES = ['APPLIED', 'REVIEWING', 'SHORTLISTED', 'INTERVIEWING', 
 
 const STAGE_META = {
   APPLIED:      { label: 'Applied',      color: '#3b82f6', bg: '#eff6ff', darkBg: '#1e3a5f' },
-  REVIEWING:    { label: 'Reviewing',    color: '#f59e0b', bg: '#fffbeb', darkBg: '#3f2c0b' },
+  REVIEWING:    { label: 'Screening',    color: '#f59e0b', bg: '#fffbeb', darkBg: '#3f2c0b' },
   SHORTLISTED:  { label: 'Shortlisted',  color: '#8b5cf6', bg: '#f5f3ff', darkBg: '#2e1a5e' },
   INTERVIEWING: { label: 'Interviewing', color: '#06b6d4', bg: '#ecfeff', darkBg: '#0e3040' },
-  ACCEPTED:     { label: 'Accepted',     color: '#10b981', bg: '#f0fdf4', darkBg: '#0e2e1f' },
+  ACCEPTED:     { label: 'Hired',        color: '#10b981', bg: '#f0fdf4', darkBg: '#0e2e1f' },
   REJECTED:     { label: 'Rejected',     color: '#ef4444', bg: '#fef2f2', darkBg: '#3a0e0e' },
 };
 
@@ -61,8 +61,31 @@ const JobApplications = () => {
     setUpdatingId(appId);
     try {
       await jobApplicationService.updateApplicationStatus(appId, newStatus);
+      
+      // Sync candidate profile status in backend
+      const targetApp = applications.find(a => a.id === appId);
+      if (targetApp && targetApp.candidateId) {
+        let candidateStatusToSync = null;
+        if (newStatus === 'ACCEPTED') candidateStatusToSync = 'HIRED';
+        else if (newStatus === 'REJECTED') candidateStatusToSync = 'REJECTED';
+        else if (newStatus === 'REVIEWING') candidateStatusToSync = 'SCREENING';
+        else if (newStatus === 'INTERVIEWING') candidateStatusToSync = 'INTERVIEWING';
+        else if (newStatus === 'APPLIED') candidateStatusToSync = 'APPLIED';
+
+        if (candidateStatusToSync) {
+          const candidateObj = candidates.find(c => c.id === targetApp.candidateId);
+          if (candidateObj) {
+            await candidateService.updateCandidate(targetApp.candidateId, {
+              ...candidateObj,
+              status: candidateStatusToSync
+            });
+          }
+        }
+      }
+
       setApplications(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
     } catch (e) {
+      console.error('Failed to update status', e);
       alert('Failed to update status.');
     } finally {
       setUpdatingId(null);
@@ -145,7 +168,29 @@ const JobApplications = () => {
           const meta = STAGE_META[stage];
           const stageApps = getByStage(stage);
           return (
-            <div key={stage} style={{ background: 'var(--card-bg, #f8fafc)', borderRadius: '12px', border: `1px solid var(--card-border, #e2e8f0)`, minHeight: '320px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div 
+              key={stage} 
+              onDragOver={(e) => {
+                if (canManage) e.preventDefault();
+              }}
+              onDrop={(e) => {
+                if (!canManage) return;
+                e.preventDefault();
+                const appId = e.dataTransfer.getData('text/plain');
+                if (appId) {
+                  handleStatusChange(Number(appId), stage);
+                }
+              }}
+              style={{ 
+                background: 'var(--card-bg, #f8fafc)', 
+                borderRadius: '12px', 
+                border: `1px solid var(--card-border, #e2e8f0)`, 
+                minHeight: '320px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                overflow: 'hidden' 
+              }}
+            >
               {/* Column Header */}
               <div style={{ padding: '14px 16px', background: meta.color, color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: '700', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{meta.label}</span>
@@ -157,44 +202,38 @@ const JobApplications = () => {
                 {stageApps.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '13px' }}>No candidates here</div>
                 ) : stageApps.map(app => (
-                  <div key={app.id} style={{ background: 'var(--card-bg, #ffffff)', border: '1px solid var(--card-border, #e2e8f0)', borderRadius: '10px', padding: '14px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', transition: 'box-shadow 0.2s' }}
+                  <div 
+                    key={app.id} 
+                    draggable={canManage}
+                    onDragStart={(e) => {
+                      if (canManage) {
+                        e.dataTransfer.setData('text/plain', String(app.id));
+                        e.dataTransfer.effectAllowed = 'move';
+                      }
+                    }}
+                    style={{ 
+                      background: 'var(--card-bg, #ffffff)', 
+                      border: '1px solid var(--card-border, #e2e8f0)', 
+                      borderRadius: '10px', 
+                      padding: '12px 14px', 
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)', 
+                      transition: 'transform 0.15s, box-shadow 0.15s',
+                      cursor: canManage ? 'grab' : 'default',
+                      opacity: updatingId === app.id ? 0.5 : 1
+                    }}
                     onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
                     onMouseLeave={e => e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'}
                   >
                     {/* Candidate Info */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: `linear-gradient(135deg, ${meta.color}, ${meta.color}aa)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '15px', flexShrink: 0 }}>
                         {(app.candidateName || 'C').charAt(0).toUpperCase()}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-color, #1e293b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.candidateName || 'Candidate'}</div>
-                        <div style={{ fontSize: '11px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.jobPositionTitle || 'Position'}</div>
+                        <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-color, #1e293b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.candidateName || 'Candidate'}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px' }}>{app.jobPositionTitle || 'Position'}</div>
                       </div>
                     </div>
-
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '10px' }}>
-                      Applied: {app.appliedDate ? new Date(app.appliedDate).toLocaleDateString() : '—'}
-                    </div>
-
-                    {/* Move Buttons */}
-                    {canManage && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                        {PIPELINE_STAGES.filter(s => s !== stage).map(s => (
-                          <button
-                            key={s}
-                            disabled={updatingId === app.id}
-                            onClick={() => handleStatusChange(app.id, s)}
-                            style={{
-                              padding: '4px 9px', fontSize: '10px', fontWeight: '700', borderRadius: '6px', border: 'none', cursor: 'pointer',
-                              background: STAGE_META[s].bg, color: STAGE_META[s].color, transition: 'opacity 0.2s',
-                              opacity: updatingId === app.id ? 0.5 : 1
-                            }}
-                          >
-                            → {STAGE_META[s].label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

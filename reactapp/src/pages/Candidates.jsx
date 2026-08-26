@@ -229,7 +229,6 @@ const Candidates = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Status</th>
-                {(canManage || isAdmin || isCoordinator) && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -257,43 +256,12 @@ const Candidates = () => {
                             {candidate.status}
                           </span>
                         </td>
-                        {(canManage || isAdmin || isCoordinator) && (
-                          <td>
-                            {canManage && (
-                              <button 
-                                className="edit-btn" 
-                                onClick={() => openUpdateModal(candidate)}
-                                style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
-                              >
-                                Edit
-                              </button>
-                            )}
-                            {isCoordinator && (
-                              <button 
-                                className="edit-btn" 
-                                onClick={() => openStatusModal(candidate)}
-                                style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
-                              >
-                                Update Status
-                              </button>
-                            )}
-                            {isAdmin && (
-                              <button 
-                                className="delete-btn" 
-                                onClick={() => handleDelete(candidate.id)}
-                                style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: '600', cursor: 'pointer' }}
-                              >
-                                Delete
-                              </button>
-                            )}
-                          </td>
-                        )}
                       </tr>
 
                       {/* Expandable Details Drawer */}
                       {isExpanded && (
                         <tr style={{ background: '#f8fafc' }}>
-                          <td colSpan={(canManage || isAdmin || isCoordinator) ? "6" : "5"} style={{ padding: '16px 24px' }}>
+                          <td colSpan="5" style={{ padding: '16px 24px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                               <div>
                                 <span style={{ display: 'block', color: '#94a3b8', fontSize: '11px', textTransform: 'uppercase', fontWeight: '700' }}>Current Position</span>
@@ -342,7 +310,7 @@ const Candidates = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={(canManage || isAdmin || isCoordinator) ? "6" : "5"} style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>
                     No candidate records found in the database.
                   </td>
                 </tr>
