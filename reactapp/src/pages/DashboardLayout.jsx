@@ -87,6 +87,22 @@ const DashboardLayout = () => {
   const canSeeApplications = isAdmin || isRecruiter || isCoordinator;
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  const getTokenPayload = () => {
+    if (!user?.token) return {};
+    try { return JSON.parse(atob(user.token.split('.')[1])); } catch { return {}; }
+  };
+  const tokenPayload = getTokenPayload();
+  const displayName = user?.firstName || tokenPayload.firstName || user?.email?.split('@')[0] || 'User';
+
+  const getRoleBadge = () => {
+    if (isAdmin) return { label: 'ADMINISTRATOR', color: '#ef4444', bg: '#fee2e2' };
+    if (isRecruiter) return { label: 'RECRUITER', color: '#3b82f6', bg: '#dbeafe' };
+    if (isCoordinator) return { label: 'COORDINATOR', color: '#f59e0b', bg: '#fef3c7' };
+    if (roleString.includes('INTERVIEWER')) return { label: 'INTERVIEWER', color: '#8b5cf6', bg: '#ede9fe' };
+    return { label: 'USER', color: '#64748b', bg: '#f1f5f9' };
+  };
+  const badge = getRoleBadge();
+
   return (
     <div className="dashboard-container">
       <aside className="dashboard-sidebar">
@@ -190,13 +206,27 @@ const DashboardLayout = () => {
       <main className="dashboard-main" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <header className="top-bar" style={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 32px',
+          padding: '16px 32px',
           background: 'var(--header-bg, #ffffff)',
           borderBottom: '1px solid var(--header-border, #e2e8f0)',
           position: 'relative'
         }}>
+          {/* Left Greeting & Role Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--header-text, #0f172a)' }}>
+                Welcome back, {displayName} 👋
+              </h2>
+              <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#64748b' }}>
+                Here's what's happening in your workspace today.
+              </p>
+            </div>
+            <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: badge.bg, color: badge.color, letterSpacing: '0.5px' }}>
+              {badge.label}
+            </span>
+          </div>
           {/* Notification Bell Icon */}
           <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowDropdown(!showDropdown)}>
             <span style={{ fontSize: '22px' }}>🔔</span>

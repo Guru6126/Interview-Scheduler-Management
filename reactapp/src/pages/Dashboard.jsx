@@ -86,25 +86,7 @@ const Dashboard = () => {
   const displayName = user?.firstName || tokenPayload.firstName || user?.email?.split('@')[0] || 'there';
 
   return (
-    <>
-      {/* Top Header */}
-      <header className="dashboard-header" style={{ padding: '24px 32px', borderBottom: '1px solid var(--header-border, #e2e8f0)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: 'var(--header-text, #0f172a)' }}>
-              Welcome back, {displayName} 👋
-            </h2>
-            <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#64748b' }}>
-              Here's what's happening in your workspace today.
-            </p>
-          </div>
-          <span style={{ padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: badge.bg, color: badge.color, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-            {badge.label}
-          </span>
-        </div>
-      </header>
-
-      <div style={{ padding: '28px 32px' }}>
+    <div style={{ padding: '28px 32px' }}>
 
         {/* ===================== ADMIN DASHBOARD ===================== */}
         {isAdmin && (
@@ -313,7 +295,6 @@ const Dashboard = () => {
           </section>
         )}
       </div>
-    </>
   );
 };
 

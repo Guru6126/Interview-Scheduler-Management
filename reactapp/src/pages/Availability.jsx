@@ -206,7 +206,6 @@ const Availability = () => {
                 <th style={{ padding: '12px 16px' }}>Start Time</th>
                 <th style={{ padding: '12px 16px' }}>End Time</th>
                 {canManageAll && <th style={{ padding: '12px 16px' }}>Interviewer</th>}
-                <th style={{ padding: '12px 16px' }}>Status</th>
                 <th style={{ padding: '12px 16px' }}>Recurring</th>
                 <th style={{ padding: '12px 16px' }}>Actions</th>
               </tr>
@@ -222,15 +221,6 @@ const Availability = () => {
                   <td style={{ padding: '12px 16px', color: 'var(--table-td-text, #334155)' }}>{slot.endTime?.substring(0, 5)}</td>
                   {canManageAll && <td style={{ padding: '12px 16px', color: 'var(--table-td-text, #334155)' }}>{slot.userName || 'N/A'}</td>}
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{
-                      padding: '3px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600',
-                      background: slot.isAvailable ? '#d1fae5' : '#fee2e2',
-                      color: slot.isAvailable ? '#065f46' : '#991b1b'
-                    }}>
-                      {slot.isAvailable ? 'Available' : 'Blocked'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px 16px' }}>
                     <span style={{ fontSize: '13px', color: slot.recurring ? '#3b82f6' : '#94a3b8' }}>
                       {slot.recurring ? '🔁 Yes' : '—'}
                     </span>
@@ -242,7 +232,7 @@ const Availability = () => {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={canManageAll ? 7 : 6} style={{ textAlign: 'center', padding: '32px', color: '#64748b' }}>
+                  <td colSpan={canManageAll ? 6 : 5} style={{ textAlign: 'center', padding: '32px', color: '#64748b' }}>
                     No availability slots found. Click "Add Slot" to get started.
                   </td>
                 </tr>

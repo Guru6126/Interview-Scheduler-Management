@@ -106,16 +106,7 @@ const JobApplications = () => {
     }
   };
 
-  const filteredApps = applications.filter(a => {
-    if (!search) return true;
-    const s = search.toLowerCase();
-    return (
-      (a.candidateName || '').toLowerCase().includes(s) ||
-      (a.jobPositionTitle || '').toLowerCase().includes(s)
-    );
-  });
-
-  const getByStage = (stage) => filteredApps.filter(a => a.status === stage);
+  const getByStage = (stage) => applications.filter(a => a.status === stage);
 
   const totalByStage = (stage) => applications.filter(a => a.status === stage).length;
 
@@ -135,12 +126,6 @@ const JobApplications = () => {
           <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>Track candidates through each stage of the hiring funnel.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <input
-            placeholder="🔍 Search candidates or jobs..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--card-border, #e2e8f0)', background: 'var(--card-bg, #fff)', color: 'var(--text-color, #1e293b)', fontSize: '13px', width: '220px' }}
-          />
           {canManage && (
             <button onClick={() => setShowApplyModal(true)} style={{ background: '#10b981', color: '#fff', padding: '10px 18px', borderRadius: '8px', border: 'none', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}>
               + New Application
