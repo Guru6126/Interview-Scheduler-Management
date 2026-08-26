@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import logoImg from '../assets/logo.png';
+import logoImg from '../assets/logo2.png';
 import { notificationService } from '../services/notificationService';
 import './Dashboard.css';
 
@@ -122,7 +122,7 @@ const DashboardLayout = () => {
             margin: '0 0 40px 0',
             fontSize: '16px',
             letterSpacing: '0.5px',
-            color: '#f2f5f4ff',
+            color: '#10b981',
             lineHeight: '1.4',
             fontWeight: '750'
           }}>
