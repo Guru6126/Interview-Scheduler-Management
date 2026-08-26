@@ -309,7 +309,7 @@ const Availability = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                <button type="button" onClick={() => setShowForm(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #475569', color: '#cbd5e1', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                <button type="button" onClick={() => setShowForm(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', fontWeight: '600', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
                 <button type="submit" style={{ padding: '10px 20px', background: '#10b981', border: 'none', color: '#fff', fontWeight: '600', borderRadius: '8px', cursor: 'pointer' }}>
                   {editingSlot ? 'Update Slot' : 'Add Slot'}
                 </button>

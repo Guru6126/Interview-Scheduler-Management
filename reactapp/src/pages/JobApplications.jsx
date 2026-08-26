@@ -262,11 +262,13 @@ const JobApplications = () => {
                 <select value={applyForm.jobPositionId} onChange={e => setApplyForm({ ...applyForm, jobPositionId: e.target.value })}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'var(--bg-color, #0f172a)', border: '1px solid var(--card-border, #334155)', color: 'var(--text-color, #fff)' }} required>
                   <option value="">-- Select Job --</option>
-                  {jobs.map(j => <option key={j.id} value={j.id}>{j.title}</option>)}
+                  {jobs.filter(j => j.status?.toUpperCase() === 'OPEN').map(j => (
+                    <option key={j.id} value={j.id}>{j.title}</option>
+                  ))}
                 </select>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                <button type="button" onClick={() => setShowApplyModal(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #475569', color: '#cbd5e1', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                <button type="button" onClick={() => setShowApplyModal(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', fontWeight: '600', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
                 <button type="submit" style={{ padding: '10px 20px', background: '#10b981', border: 'none', color: '#fff', fontWeight: '600', borderRadius: '8px', cursor: 'pointer' }}>Create Application</button>
               </div>
             </form>

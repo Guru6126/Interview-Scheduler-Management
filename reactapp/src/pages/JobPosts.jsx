@@ -243,18 +243,24 @@ const JobPosts = () => {
                   </td>
                   {canManageJobs && (
                     <td>
-                      <button 
-                        onClick={() => openUpdateModal(job)}
-                        style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleClosePost(job.id)}
-                        style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: '600', cursor: 'pointer' }}
-                      >
-                        Close Post
-                      </button>
+                      {job.status === 'CLOSED' ? (
+                        <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                      ) : (
+                        <>
+                          <button 
+                            onClick={() => openUpdateModal(job)}
+                            style={{ background: 'none', border: 'none', color: '#10b981', fontWeight: '600', cursor: 'pointer', marginRight: '10px' }}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => handleClosePost(job.id)}
+                            style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: '600', cursor: 'pointer' }}
+                          >
+                            Close Post
+                          </button>
+                        </>
+                      )}
                     </td>
                   )}
                 </tr>
