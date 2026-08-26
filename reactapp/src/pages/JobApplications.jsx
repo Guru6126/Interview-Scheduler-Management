@@ -239,7 +239,9 @@ const JobApplications = () => {
                 <select value={applyForm.candidateId} onChange={e => setApplyForm({ ...applyForm, candidateId: e.target.value })}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'var(--bg-color, #0f172a)', border: '1px solid var(--card-border, #334155)', color: 'var(--text-color, #fff)' }} required>
                   <option value="">-- Select Candidate --</option>
-                  {candidates.map(c => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
+                  {candidates.filter(c => c.status?.toUpperCase() !== 'HIRED').map(c => (
+                    <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>
+                  ))}
                 </select>
               </div>
               <div>

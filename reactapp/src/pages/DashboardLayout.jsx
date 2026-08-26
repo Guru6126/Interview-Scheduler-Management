@@ -136,24 +136,19 @@ const DashboardLayout = () => {
           >
             Dashboard
           </li>
-          <li
-            className={location.pathname === '/interviews' ? 'active' : ''}
-            onClick={() => navigate('/interviews')}
-          >
-            Interviews
-          </li>
-          <li
-            className={location.pathname === '/candidates' ? 'active' : ''}
-            onClick={() => navigate('/candidates')}
-          >
-            Candidates
-          </li>
 
           <li
             className={location.pathname === '/jobposts' ? 'active' : ''}
             onClick={() => navigate('/jobposts')}
           >
             Job Posts
+          </li>
+
+          <li
+            className={location.pathname === '/candidates' ? 'active' : ''}
+            onClick={() => navigate('/candidates')}
+          >
+            Candidates
           </li>
 
           {canSeeApplications && (
@@ -170,6 +165,13 @@ const DashboardLayout = () => {
             onClick={() => navigate('/availability')}
           >
             Availability
+          </li>
+
+          <li
+            className={location.pathname === '/interviews' ? 'active' : ''}
+            onClick={() => navigate('/interviews')}
+          >
+            Interviews
           </li>
 
           {/* Users Management: Visible for ADMIN role */}
