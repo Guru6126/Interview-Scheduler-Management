@@ -5,7 +5,7 @@ import { candidateService } from '../services/candidateService';
 import { jobService } from '../services/jobService';
 import './Dashboard.css';
 
-const PIPELINE_STAGES = ['APPLIED', 'REVIEWING', 'SHORTLISTED', 'INTERVIEWING', 'ACCEPTED', 'REJECTED'];
+const PIPELINE_STAGES = ['APPLIED', 'REVIEWING', 'INTERVIEWING', 'SHORTLISTED', 'ACCEPTED', 'REJECTED'];
 
 const STAGE_META = {
   APPLIED:      { label: 'Applied',      color: '#3b82f6', bg: '#eff6ff', darkBg: '#1e3a5f' },

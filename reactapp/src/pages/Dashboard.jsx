@@ -134,9 +134,9 @@ const Dashboard = () => {
             <div style={{ background: 'var(--card-bg,#fff)', border: '1px solid var(--card-border,#e2e8f0)', borderRadius: '14px', padding: '20px', marginBottom: '24px' }}>
               <h3 style={{ margin: '0 0 16px 0', fontSize: '15px', fontWeight: '700', color: 'var(--text-color,#1e293b)' }}>Pipeline Stage Distribution</h3>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {['APPLIED','REVIEWING','SHORTLISTED','INTERVIEWING','ACCEPTED','REJECTED'].map(stage => {
+                {['APPLIED','REVIEWING','INTERVIEWING','SHORTLISTED','ACCEPTED','REJECTED'].map(stage => {
                   const count = applications.filter(a => a.status === stage).length;
-                  const colors = { APPLIED:'#3b82f6', REVIEWING:'#f59e0b', SHORTLISTED:'#8b5cf6', INTERVIEWING:'#06b6d4', ACCEPTED:'#10b981', REJECTED:'#ef4444' };
+                  const colors = { APPLIED:'#3b82f6', REVIEWING:'#f59e0b', INTERVIEWING:'#06b6d4', SHORTLISTED:'#8b5cf6', ACCEPTED:'#10b981', REJECTED:'#ef4444' };
                   return (
                     <div key={stage} style={{ textAlign: 'center', minWidth: '80px' }}>
                       <div style={{ fontSize: '20px', fontWeight: '800', color: colors[stage] }}>{count}</div>
