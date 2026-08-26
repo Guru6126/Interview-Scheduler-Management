@@ -34,6 +34,7 @@ public class InterviewMapper {
         r.setId(e.getId());
         r.setCandidateId(e.getCandidate().getId());
         r.setCandidateName(e.getCandidate().getFirstName() + " " + e.getCandidate().getLastName());
+        r.setCandidateStatus(e.getCandidate().getStatus());
         r.setJobPositionId(e.getJobPosition().getId());
         r.setJobPositionTitle(e.getJobPosition().getTitle());
         r.setScheduledDate(e.getScheduledDate());

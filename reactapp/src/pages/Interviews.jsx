@@ -191,27 +191,57 @@ const Interviews = () => {
                       </span>
                     </td>
                     <td style={{ padding: '12px' }}>
-                      {/* Feedback Action (View or Add) */}
+                      {/* Feedback Action */}
                       {canProvideFeedback && item.status !== 'CANCELLED' && (
-                        <button
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: item.feedback ? '#8b5cf6' : '#3b82f6', // Purple for view, blue for add
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            marginRight: '10px'
-                          }}  
-                          onClick={() => {
-                            setSelectedInterview(item);
-                            setIsFeedbackModalOpen(true);
-                          }}
-                        >
-                          {item.feedback ? 'View Feedback' : (item.status === 'COMPLETED' ? 'Add Feedback' : 'Submit Feedback')}
-                        </button>
+                        <>
+                          {/* View Feedback: interview completed and feedback was already recorded */}
+                          {item.feedback && (
+                            <button
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#8b5cf6',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                marginRight: '10px'
+                              }}
+                              onClick={() => {
+                                setSelectedInterview(item);
+                                setIsFeedbackModalOpen(true);
+                              }}
+                            >
+                              View Feedback
+                            </button>
+                          )}
+
+                          {/* Submit Feedback: only allowed when candidate status is INTERVIEWING and no feedback yet */}
+                          {!item.feedback && item.candidateStatus === 'INTERVIEWING' && (
+                            <button
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#3b82f6',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                marginRight: '10px'
+                              }}
+                              onClick={() => {
+                                setSelectedInterview(item);
+                                setIsFeedbackModalOpen(true);
+                              }}
+                            >
+                              Submit Feedback
+                            </button>
+                          )}
+
+                          {/* N/A: candidate not in INTERVIEWING stage and no feedback */}
+                          {!item.feedback && item.candidateStatus !== 'INTERVIEWING' && (
+                            <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
+                          )}
+                        </>
                       )}
 
-                      {/* Display N/A for CANCELLED interviews or COMPLETED interviews without feedback access */}
+                      {/* N/A for CANCELLED interviews or non-feedback roles */}
                       {(item.status === 'CANCELLED' || (!canProvideFeedback && item.status === 'COMPLETED')) && (
                         <span style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>N/A</span>
                       )}

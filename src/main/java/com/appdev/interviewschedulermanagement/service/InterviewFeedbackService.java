@@ -20,6 +20,7 @@ public class InterviewFeedbackService {
     private final InterviewFeedbackRepository repo;
     private final InterviewRepository interviewRepo;
     private final UserRepository userRepo;
+    private final CandidateRepository candidateRepo;
     private final InterviewFeedbackMapper mapper;
     private final NotificationRepository notificationRepo;
     private final AuditLogService auditLogService;
@@ -32,6 +33,12 @@ public class InterviewFeedbackService {
         
         var interviewer = userRepo.findById(req.getInterviewerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Interviewer not found with ID: " + req.getInterviewerId()));
+
+        // Guard: Only allow feedback when candidate status is INTERVIEWING
+        var candidate = interview.getCandidate();
+        if (candidate == null || candidate.getStatus() != com.appdev.interviewschedulermanagement.enums.CandidateStatus.INTERVIEWING) {
+            throw new IllegalStateException("Feedback can only be submitted when the candidate status is INTERVIEWING. Current status: " + (candidate != null ? candidate.getStatus() : "unknown"));
+        }
 
         // 1. Mark interview as COMPLETED
         interview.setStatus(com.appdev.interviewschedulermanagement.enums.InterviewStatus.COMPLETED);
@@ -56,6 +63,15 @@ public class InterviewFeedbackService {
                 if (newAppStatus != null && newAppStatus != oldAppStatus) {
                     application.setStatus(newAppStatus);
                     jobApplicationRepo.save(application);
+
+                    // Sync candidate profile status based on outcome
+                    var candidateToSync = interview.getCandidate();
+                    if (newAppStatus == com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.SHORTLISTED) {
+                        candidateToSync.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.OFFERED);
+                    } else if (newAppStatus == com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REJECTED) {
+                        candidateToSync.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.REJECTED);
+                    }
+                    candidateRepo.save(candidateToSync);
 
                     auditLogService.logEvent(
                         interviewer.getId(),

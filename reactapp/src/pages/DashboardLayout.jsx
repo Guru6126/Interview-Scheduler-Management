@@ -84,7 +84,9 @@ const DashboardLayout = () => {
   const isAdmin = roleString.includes('ADMIN');
   const isCoordinator = roleString.includes('COORDINATOR');
   const isRecruiter = roleString.includes('RECRUITER');
+  const isInterviewer = roleString.includes('INTERVIEWER') && !isAdmin && !isRecruiter && !isCoordinator;
   const canSeeApplications = isAdmin || isRecruiter || isCoordinator;
+  const canSeeCandidates = !isInterviewer;
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const getTokenPayload = () => {
@@ -144,12 +146,14 @@ const DashboardLayout = () => {
             Job Posts
           </li>
 
-          <li
-            className={location.pathname === '/candidates' ? 'active' : ''}
-            onClick={() => navigate('/candidates')}
-          >
-            Candidates
-          </li>
+          {canSeeCandidates && (
+            <li
+              className={location.pathname === '/candidates' ? 'active' : ''}
+              onClick={() => navigate('/candidates')}
+            >
+              Candidates
+            </li>
+          )}
 
           {canSeeApplications && (
             <li

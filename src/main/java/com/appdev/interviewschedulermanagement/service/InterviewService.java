@@ -118,6 +118,14 @@ public class InterviewService {
     public InterviewResponse scheduleInterview(InterviewRequest req) {
         var candidate = candidateRepo.findById(req.getCandidateId())
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found: " + req.getCandidateId()));
+
+        // Guard: Only candidates in SCREENING status can be scheduled for an interview
+        if (candidate.getStatus() != com.appdev.interviewschedulermanagement.enums.CandidateStatus.SCREENING) {
+            throw new IllegalStateException(
+                "An interview can only be scheduled for a candidate in SCREENING status. " +
+                "Current status: " + candidate.getStatus()
+            );
+        }
         
         var job = jobRepo.findById(req.getJobPositionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job position not found: " + req.getJobPositionId()));
@@ -132,6 +140,10 @@ public class InterviewService {
         );
 
         Interview i = repo.save(mapper.toEntity(req, candidate, job));
+
+        // Auto-promote candidate status from SCREENING → INTERVIEWING
+        candidate.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.INTERVIEWING);
+        candidateRepo.save(candidate);
 
         if (req.getInterviewerId() != null) {
             User interviewer = userRepo.findById(req.getInterviewerId())
@@ -162,7 +174,7 @@ public class InterviewService {
             "SCHEDULE_INTERVIEW", 
             "Interview", 
             i.getId(), 
-            "Scheduled interview for candidate " + candidate.getFirstName() + " " + candidate.getLastName()
+            "Scheduled interview for candidate " + candidate.getFirstName() + " " + candidate.getLastName() + ". Candidate status promoted to INTERVIEWING."
         );
 
         return mapper.toResponse(i);

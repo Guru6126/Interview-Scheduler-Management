@@ -1,5 +1,6 @@
 package com.appdev.interviewschedulermanagement.dto;
 
+import com.appdev.interviewschedulermanagement.enums.CandidateStatus;
 import com.appdev.interviewschedulermanagement.enums.InterviewStatus;
 import com.appdev.interviewschedulermanagement.enums.InterviewType;
 import lombok.Data;
@@ -12,6 +13,7 @@ public class InterviewResponse {
     private Long id;
     private Long candidateId;
     private String candidateName;
+    private CandidateStatus candidateStatus;
     private Long jobPositionId;
     private String jobPositionTitle;
     private LocalDate scheduledDate;
