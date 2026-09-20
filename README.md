@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 Executive Summary
+## Executive Summary
 
 **SlotScore** is an enterprise-grade recruitment lifecycle management system designed to eliminate operational redundancy between recruiters, interviewers, and hiring managers. By leveraging smart constraint-driven interview scheduling and automated status handoffs upon feedback submission, SlotScore simplifies candidate tracking, enforces interviewer availability windows, and automates hiring pipeline stage transitions without manual recruiter double-entry.
 
