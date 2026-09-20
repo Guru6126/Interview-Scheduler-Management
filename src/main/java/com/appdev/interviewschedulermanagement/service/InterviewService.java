@@ -119,10 +119,11 @@ public class InterviewService {
         var candidate = candidateRepo.findById(req.getCandidateId())
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate not found: " + req.getCandidateId()));
 
-        // Guard: Only candidates in SCREENING status can be scheduled for an interview
-        if (candidate.getStatus() != com.appdev.interviewschedulermanagement.enums.CandidateStatus.SCREENING) {
+        // Guard: Only candidates in SCREENING or INTERVIEWING status can be scheduled for an interview
+        if (candidate.getStatus() != com.appdev.interviewschedulermanagement.enums.CandidateStatus.SCREENING &&
+            candidate.getStatus() != com.appdev.interviewschedulermanagement.enums.CandidateStatus.INTERVIEWING) {
             throw new IllegalStateException(
-                "An interview can only be scheduled for a candidate in SCREENING status. " +
+                "An interview can only be scheduled for a candidate in SCREENING or INTERVIEWING status. " +
                 "Current status: " + candidate.getStatus()
             );
         }

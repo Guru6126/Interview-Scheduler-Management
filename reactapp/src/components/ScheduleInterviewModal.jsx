@@ -194,7 +194,7 @@ export default function ScheduleInterviewModal({ isOpen, onClose, onSubmit }) {
               required
             >
               <option value="">-- Choose Candidate --</option>
-              {candidates.filter(c => c.status?.toUpperCase() === 'SCREENING').map(cand => (
+              {candidates.filter(c => ['SCREENING', 'INTERVIEWING'].includes(c.status?.toUpperCase())).map(cand => (
                 <option key={cand.id} value={cand.id}>
                   {getCandidateName(cand)} ({cand.email || 'No Email'})
                 </option>
