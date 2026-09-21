@@ -309,11 +309,11 @@ const Users = () => {
               </div>
               <div className="form-group">
                 <label>First Name *</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required maxLength={50} autoComplete="off" />
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required maxLength={50} autoComplete="off" />
               </div>
               <div className="form-group">
                 <label>Last Name *</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required maxLength={50} autoComplete="off" />
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required maxLength={50} autoComplete="off" />
               </div>
               <div className="form-group">
                 <label>Email *</label>
@@ -377,11 +377,11 @@ const Users = () => {
               </div>
               <div className="form-group">
                 <label>First Name *</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required maxLength={50} autoComplete="off" />
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required maxLength={50} autoComplete="off" />
               </div>
               <div className="form-group">
                 <label>Last Name *</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required maxLength={50} autoComplete="off" />
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required maxLength={50} autoComplete="off" />
               </div>
               <div className="form-group">
                 <label>Email *</label>

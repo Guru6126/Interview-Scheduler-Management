@@ -67,7 +67,7 @@ public class InterviewFeedbackService {
                     // Sync candidate profile status based on outcome
                     var candidateToSync = interview.getCandidate();
                     if (newAppStatus == com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.SHORTLISTED) {
-                        candidateToSync.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.OFFERED);
+                        candidateToSync.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.SHORTLISTED);
                     } else if (newAppStatus == com.appdev.interviewschedulermanagement.enums.JobApplicationStatus.REJECTED) {
                         candidateToSync.setStatus(com.appdev.interviewschedulermanagement.enums.CandidateStatus.REJECTED);
                     }

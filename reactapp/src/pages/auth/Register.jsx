@@ -95,6 +95,8 @@ const Register = () => {
                 placeholder="Enter your first name"
                 value={formData.firstName}
                 onChange={handleChange}
+                pattern="[A-Za-z ]+"
+                title="Name should contain only letters and spaces"
                 required
               />
             </div>
@@ -108,6 +110,8 @@ const Register = () => {
                 placeholder="Enter your last name"
                 value={formData.lastName}
                 onChange={handleChange}
+                pattern="[A-Za-z ]+"
+                title="Name should contain only letters and spaces"
                 required
               />
             </div>

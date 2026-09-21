@@ -328,11 +328,11 @@ const Candidates = () => {
             <form onSubmit={handleCreateSubmit}>
               <div className="form-group">
                 <label>First Name *</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required />
               </div>
               <div className="form-group">
                 <label>Last Name *</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required />
               </div>
               <div className="form-group">
                 <label>Email *</label>
@@ -376,6 +376,7 @@ const Candidates = () => {
                   <option value="APPLIED">Applied</option>
                   <option value="SCREENING">Screening</option>
                   <option value="INTERVIEWING">Interviewing</option>
+                  <option value="SHORTLISTED">Shortlisted</option>
                   <option value="OFFERED">Offered</option>
                   <option value="HIRED">Hired</option>
                   <option value="REJECTED">Rejected</option>
@@ -398,11 +399,11 @@ const Candidates = () => {
             <form onSubmit={handleUpdateSubmit}>
               <div className="form-group">
                 <label>First Name *</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required />
               </div>
               <div className="form-group">
                 <label>Last Name *</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} pattern="[A-Za-z ]+" title="Name should contain only letters and spaces" required />
               </div>
               <div className="form-group">
                 <label>Email *</label>
@@ -446,6 +447,7 @@ const Candidates = () => {
                   <option value="APPLIED">Applied</option>
                   <option value="SCREENING">Screening</option>
                   <option value="INTERVIEWING">Interviewing</option>
+                  <option value="SHORTLISTED">Shortlisted</option>
                   <option value="OFFERED">Offered</option>
                   <option value="HIRED">Hired</option>
                   <option value="REJECTED">Rejected</option>
@@ -480,6 +482,7 @@ const Candidates = () => {
                   <option value="APPLIED">Applied</option>
                   <option value="SCREENING">Screening</option>
                   <option value="INTERVIEWING">Interviewing</option>
+                  <option value="SHORTLISTED">Shortlisted</option>
                   <option value="OFFERED">Offered</option>
                   <option value="HIRED">Hired</option>
                   <option value="REJECTED">Rejected</option>

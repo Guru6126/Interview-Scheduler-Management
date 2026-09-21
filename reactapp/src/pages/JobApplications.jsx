@@ -68,6 +68,7 @@ const JobApplications = () => {
         let candidateStatusToSync = null;
         if (newStatus === 'ACCEPTED') candidateStatusToSync = 'HIRED';
         else if (newStatus === 'REJECTED') candidateStatusToSync = 'REJECTED';
+        else if (newStatus === 'SHORTLISTED') candidateStatusToSync = 'SHORTLISTED';
         else if (newStatus === 'REVIEWING') candidateStatusToSync = 'SCREENING';
         else if (newStatus === 'INTERVIEWING') candidateStatusToSync = 'INTERVIEWING';
         else if (newStatus === 'APPLIED') candidateStatusToSync = 'APPLIED';
