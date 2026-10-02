@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 @Entity
 @Table(name = "users")
 @Data
@@ -60,6 +58,7 @@ public class User implements UserDetails {
     private UserRole role;
 
     @Column(name = "is_active", nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
 
     @Column(length = 50)
@@ -75,26 +74,32 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "recruiter", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("recruiter")
+    @Builder.Default
     private List<Candidate> candidates = new ArrayList<>();
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("creator")
+    @Builder.Default
     private List<JobPosition> jobPositions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
+    @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
+    @Builder.Default
     private List<Availability> availabilities = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
+    @Builder.Default
     private List<AuditLog> auditLogs = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
+    @Builder.Default
     private List<InterviewParticipant> participants = new ArrayList<>();
 
     // Spring Security UserDetails methods

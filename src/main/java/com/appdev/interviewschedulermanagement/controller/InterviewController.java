@@ -1,6 +1,7 @@
 package com.appdev.interviewschedulermanagement.controller;
 
-import com.appdev.interviewschedulermanagement.dto.*;
+import com.appdev.interviewschedulermanagement.dto.InterviewRequest;
+import com.appdev.interviewschedulermanagement.dto.InterviewResponse;
 import com.appdev.interviewschedulermanagement.service.InterviewService;
 import jakarta.validation.Valid;
 
